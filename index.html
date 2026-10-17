@@ -352,6 +352,11 @@ nav a b{font:400 22px/1 "Bebas Neue",sans-serif;letter-spacing:.05em}
 nav a span{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:13px;letter-spacing:.14em;transition:max-width .3s,opacity .25s,margin .3s}
 nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
 @media(max-width:560px){nav a{padding:7px 16px}nav a b{font-size:20px}}
+
+#menuBtn{margin-left:auto}
+.mmore a.on b{color:var(--org)}
+.mmore a.on b::before{content:"▸ ";color:var(--org)}
+@media(max-width:560px){#services{padding-top:110px}.hero{padding-top:34px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -368,9 +373,6 @@ nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
 
 <header id="hd"><div class="in">
   <a class="brand" href="#home"><img src="img/logo.png" alt=""><span><b>旭馳</b>車業</span></a>
-  <nav id="nav">
-    <a href="#home" title="首頁" aria-label="首頁"><b>1</b><span>首頁</span></a><a href="#maintain" title="保養" aria-label="保養"><b>2</b><span>保養</span></a><a href="#repair" title="維修" aria-label="維修"><b>3</b><span>維修</span></a><a href="#mod" title="改裝" aria-label="改裝"><b>4</b><span>改裝</span></a><a href="#rescue" title="救援" aria-label="救援"><b>5</b><span>救援</span></a><a href="#newbike" title="新車" aria-label="新車"><b>6</b><span>新車</span></a>
-  </nav>
   <button id="menuBtn" aria-label="開啟選單" aria-expanded="false" aria-controls="drawer"><i></i><i></i><i></i></button>
 </div></header>
 
@@ -381,7 +383,7 @@ nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
 <div id="veil"></div>
 <aside id="drawer" aria-label="選單" aria-hidden="true">
   <button id="menuClose" aria-label="關閉選單"><span>CLOSE</span><i></i></button>
-  <div class="mmore" id="moreLinks" aria-label="更多服務"></div>
+  <div class="mmore" aria-label="選單"><div class="mgrp" id="pagesNav"><div class="mtitle"><span>認識旭馳車業</span></div><a href="#maintain" style="--i:0"><b>保養</b><em>基礎保養・大保養・里程該換什麼</em></a><a href="#repair" style="--i:1"><b>維修</b><em>一般查修・車禍維修與估價</em></a><a href="#mod" style="--i:2"><b>改裝</b><em>改裝範例・品項與價位</em></a><a href="#rescue" style="--i:3"><b>救援</b><em>費用試算・LINE 求救</em></a><a href="#newbike" style="--i:4"><b>新車</b><em>服務品牌・舊車服務</em></a></div><div id="moreLinks" style="display:contents"></div></div>
 </aside>
 
 <main id="top">
@@ -651,7 +653,7 @@ addEventListener('scroll',()=>{
 /* 進場動畫 + 導覽高亮 */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-const links=[...document.querySelectorAll('#nav a')];
+const links=[...document.querySelectorAll('#pagesNav a')];
 const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
 
 
@@ -728,7 +730,7 @@ const FIXED=[
 ];
 function drawLinks(extra){
   const all=FIXED.concat(extra),officials=all.filter(l=>l.group==='原廠官網'),others=all.filter(l=>l.group!=='原廠官網');
-  let i=0;const item=l=>`<a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener" style="--i:${i++}"><b>${esc(l.name)}</b><em>${esc(l.desc)}</em></a>`;
+  let i=5;const item=l=>`<a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener" style="--i:${i++}"><b>${esc(l.name)}</b><em>${esc(l.desc)}</em></a>`;
   const grp=(en,zh,list)=>list.length?`<div class="mgrp"><div class="mtitle"><span>${zh}</span></div>${list.map(item).join('')}</div>`:'';
   $('#moreLinks').innerHTML=grp('','更多服務',others)+grp('','新車官網連結',officials);
 }
