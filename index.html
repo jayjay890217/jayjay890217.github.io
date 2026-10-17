@@ -218,7 +218,14 @@ header{top:34px}
 @media(max-width:900px){.fcols{grid-template-columns:1fr 1fr}.fcols>div:first-child{grid-column:1/-1}}
 @media(max-width:560px){.announce{font-size:11.5px}.announce .hide-m{display:none}.sc .n{font-size:46px}}
 
-.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:26px}
+.newswrap{position:relative;margin-top:26px}
+.news{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 2px 18px;scrollbar-width:thin;scrollbar-color:var(--org) #1a1a1a;-webkit-overflow-scrolling:touch}
+.news::-webkit-scrollbar{height:4px}.news::-webkit-scrollbar-track{background:#1a1a1a}.news::-webkit-scrollbar-thumb{background:var(--org)}
+.news .ncard{flex:0 0 min(78vw,320px);scroll-snap-align:start}
+.narrow{position:absolute;top:calc(50% - 30px);z-index:3;width:44px;height:44px;background:rgba(10,10,10,.85);border:1px solid var(--org);color:var(--org);font:300 26px/1 sans-serif;cursor:pointer;transition:.2s}
+.narrow:hover{background:var(--org);color:#111}
+.narrow.l{left:-10px}.narrow.r{right:-10px}
+@media(max-width:560px){.narrow{display:none}}
 .ncard{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--org);overflow:hidden;display:flex;flex-direction:column}
 .ncard .pic{position:relative;aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#101010 0 14px,#161616 14px 28px)}
 .ncard .pic img{width:100%;height:100%;object-fit:cover}
@@ -347,7 +354,7 @@ body.lock{overflow:hidden}
 <section id="news" hidden style="padding-top:20px"><div class="wrap">
   <div class="eyebrow bebas reveal center">NEWS</div>
   <h2 class="title arrow center reveal">旭馳<b>最新消息</b></h2>
-  <div class="news" id="newsList"></div>
+  <div class="newswrap"><button class="narrow l" id="nPrev" aria-label="上一則">‹</button><div class="news" id="newsList"></div><button class="narrow r" id="nNext" aria-label="下一則">›</button></div>
 </div></section>
 
 <!-- 影片框(最上方) -->
@@ -652,6 +659,7 @@ getApi('posts').then(d=>{
   const ps=(d&&d.posts||[]).slice(0,6);if(!ps.length)return;
   $('#newsList').innerHTML=ps.map(p=>{const [,m,dd]=String(p.date).split('-');
     return `<article class="ncard reveal"><div class="pic">${p.image?`<img src="${esc(safeUrl(p.image))}" alt="" loading="lazy" onerror="this.remove()">`:''}<span class="badge">${+m}/${+dd}</span></div><div class="t"><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p></div></article>`}).join('');
+  const nl=$('#newsList'),step=()=>nl.querySelector('.ncard').offsetWidth+16;$('#nPrev').onclick=()=>nl.scrollBy({left:-step()});$('#nNext').onclick=()=>nl.scrollBy({left:step()});
   $('#news').hidden=false;document.querySelectorAll('#newsList .reveal').forEach(el=>io.observe(el));
 }).catch(()=>{});
 const FIXED=[
