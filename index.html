@@ -338,6 +338,13 @@ body.lock{overflow:hidden}
   #services{padding-top:150px}
   .hero{padding-top:80px}
 }
+
+/* 導覽：斜切平行四邊形，帶速度感 */
+nav{gap:2px}
+nav a{border-radius:0;padding:8px 22px;background:rgba(255,255,255,.07);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);letter-spacing:.12em;font-weight:900;transition:background .2s,color .2s,transform .2s}
+nav a:hover{background:rgba(255,122,0,.35);color:#fff;transform:translateX(3px)}
+nav a.on,nav a.on:hover{background:linear-gradient(100deg,var(--org),var(--org2));color:#111;transform:none}
+@media(max-width:560px){nav a{padding:8px 18px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -659,8 +666,9 @@ document.addEventListener('click',e=>{
   const id=a.getAttribute('href').slice(1);
   if(openTab(id,true))e.preventDefault();
 });
-openTab((location.hash||'').slice(1)||'home',false);
-if(!(location.hash||'').slice(1)||!document.getElementById((location.hash||'').slice(1)))openTab('home',false);
+/* 一開啟網頁一律先顯示首頁 */
+try{history.scrollRestoration='manual';history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+openTab('home',false);scrollTo(0,0);
 
 /* 救援：LINE 預填 + 費用試算（費率同「道路救援」頁：2 公里內 $500，超過每公里 +$50） */
 document.getElementById('rescueLine').href='https://line.me/R/oaMessage/'+encodeURIComponent('@f22048272')+'/?'+encodeURIComponent('【道路救援】\n車牌號碼：\n停放地點：\n車輛狀況：\n（四周照片會一起傳）');
