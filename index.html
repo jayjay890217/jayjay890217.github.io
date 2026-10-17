@@ -302,6 +302,11 @@ body.lock{overflow:hidden}
 .mtitle::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
 .mtitle small{font:400 11px "Bebas Neue",sans-serif;letter-spacing:.3em;color:var(--org)}
 .mtitle span{font-size:15px;font-weight:700;letter-spacing:.3em;color:var(--txt)}
+
+.mtabs{display:none;gap:6px;justify-content:center;padding:14px 12px 0;position:sticky;top:98px;z-index:30;background:linear-gradient(var(--bg) 70%,transparent)}
+.mtabs a{flex:1;text-align:center;padding:9px 0;border:1px solid var(--line);font-weight:900;font-size:14px;color:var(--dim)}
+.mtabs a.on{background:var(--org);border-color:var(--org);color:#111}
+@media(max-width:560px){.mtabs{display:flex}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*{opacity:1;transform:none}}
 </style>
 </head>
@@ -365,20 +370,8 @@ body.lock{overflow:hidden}
   <div class="vlist reveal" id="vlist"></div>
 </div></section>
 
-<!-- 服務總覽 -->
-<section style="padding-top:20px"><div class="wrap">
-  <div class="eyebrow bebas reveal center">SERVICES</div>
-  <h2 class="title arrow center reveal">依服務<b>選擇</b></h2>
-  <div class="cards">
-    <a class="sc reveal" href="#maintain" data-tab="maintain" role="tab"><div class="n">01</div><h3>保養</h3><p>基礎保養／大保養<br>里程對照換件</p></a>
-    <a class="sc reveal" href="#repair" data-tab="repair" role="tab"><div class="n">02</div><h3>維修</h3><p>一般查修<br>車禍維修估價</p></a>
-    <a class="sc reveal" href="#mod" data-tab="mod" role="tab"><div class="n">03</div><h3>改裝</h3><p>改裝範例<br>品項與價位</p></a>
-    <a class="sc reveal" href="#rescue" data-tab="rescue" role="tab"><div class="n">04</div><h3>救援</h3><p>費用與內容<br>拋錨別慌</p></a>
-    <a class="sc reveal" href="#newbike" data-tab="newbike" role="tab"><div class="n">05</div><h3>新車</h3><p>服務品牌<br>舊車服務</p></a>
-  </div>
-</div></section>
-
 <div id="services">
+<div class="mtabs" id="mtabs"><a href="#maintain" data-tab="maintain">保養</a><a href="#repair" data-tab="repair">維修</a><a href="#mod" data-tab="mod">改裝</a><a href="#rescue" data-tab="rescue">救援</a><a href="#newbike" data-tab="newbike">新車</a></div>
 <!-- 01 保養 -->
 <section class="svc" id="maintain"><div class="wrap">
   <div class="svhead reveal" data-en="MAINTENANCE"><div class="big">01</div><div><div class="eyebrow bebas">MAINTENANCE</div><h2 class="title">保<b>養</b></h2></div></div>
@@ -612,7 +605,7 @@ so.observe(document.getElementById('visit'));
 
 
 /* 服務分頁 */
-const panels=[...document.querySelectorAll('.svc')],tabs=[...document.querySelectorAll('.sc[data-tab]')];
+const panels=[...document.querySelectorAll('.svc')],tabs=[...document.querySelectorAll('[data-tab]')];
 function openTab(id,scroll){
   if(!document.getElementById(id)||!panels.some(p=>p.id===id))return false;
   panels.forEach(p=>p.classList.toggle('active',p.id===id));
