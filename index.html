@@ -307,6 +307,16 @@ body.lock{overflow:hidden}
 .mtabs a{flex:1;text-align:center;padding:9px 0;border:1px solid var(--line);font-weight:900;font-size:14px;color:var(--dim)}
 .mtabs a.on{background:var(--org);border-color:var(--org);color:#111}
 @media(max-width:560px){.mtabs{display:flex}}
+
+.news .ncard{flex:0 0 100%;display:grid;grid-template-columns:minmax(130px,40%) 1fr;min-height:220px;border-top:3px solid var(--org)}
+.news .ncard .pic{aspect-ratio:auto;height:100%;min-height:200px}
+.news .ncard .t{display:flex;flex-direction:column;justify-content:center;padding:22px 30px}
+.news .ncard h3{font-size:clamp(18px,3.4vw,28px);margin-bottom:8px}
+.news .ncard p{font-size:clamp(13px,2vw,16px)}
+.ndots{display:flex;justify-content:center;gap:8px;margin-top:2px}
+.ndots button{width:26px;height:3px;border:0;background:#3a3a3a;cursor:pointer;padding:0;transition:.3s}
+.ndots button.on{background:var(--org);width:40px}
+@media(max-width:560px){.news .ncard{grid-template-columns:38% 1fr;min-height:150px}.news .ncard .pic{min-height:150px}.news .ncard .t{padding:12px 14px}.news .ncard h3{font-size:16px;margin-bottom:4px}.news .ncard p{font-size:12.5px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -359,7 +369,7 @@ body.lock{overflow:hidden}
 <section id="news" hidden style="padding-top:20px"><div class="wrap">
   <div class="eyebrow bebas reveal center">NEWS</div>
   <h2 class="title arrow center reveal">旭馳<b>最新消息</b></h2>
-  <div class="newswrap"><button class="narrow l" id="nPrev" aria-label="上一則">‹</button><div class="news" id="newsList"></div><button class="narrow r" id="nNext" aria-label="下一則">›</button></div>
+  <div class="newswrap"><button class="narrow l" id="nPrev" aria-label="上一則">‹</button><div class="news" id="newsList"></div><button class="narrow r" id="nNext" aria-label="下一則">›</button><div class="ndots" id="nDots"></div></div>
 </div></section>
 
 <!-- 影片框(最上方) -->
@@ -659,6 +669,13 @@ getApi('posts').then(d=>{
   $('#newsList').innerHTML=ps.map(p=>{const [,m,dd]=String(p.date).split('-');
     return `<article class="ncard reveal"><div class="pic">${p.image?`<img src="${esc(safeUrl(p.image))}" alt="" loading="lazy" onerror="this.remove()">`:''}<span class="badge">${+m}/${+dd}</span></div><div class="t"><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p></div></article>`}).join('');
   const nl=$('#newsList'),step=()=>nl.querySelector('.ncard').offsetWidth+16;$('#nPrev').onclick=()=>nl.scrollBy({left:-step()});$('#nNext').onclick=()=>nl.scrollBy({left:step()});
+  const cards=[...nl.querySelectorAll('.ncard')],dots=$('#nDots');
+  dots.innerHTML=cards.length>1?cards.map((_,i)=>`<button aria-label="第 ${i+1} 則"></button>`).join(''):'';
+  const ds=[...dots.children];ds.forEach((b,i)=>b.onclick=()=>nl.scrollTo({left:i*step()}));
+  const mark=()=>{const i=Math.round(nl.scrollLeft/step());ds.forEach((b,j)=>b.classList.toggle('on',j===i))};
+  nl.addEventListener('scroll',mark,{passive:true});mark();
+  if(cards.length>1&&!matchMedia('(prefers-reduced-motion: reduce)').matches){let hold=false;['mouseenter','touchstart'].forEach(e=>nl.addEventListener(e,()=>hold=true,{passive:true}));['mouseleave','touchend'].forEach(e=>nl.addEventListener(e,()=>hold=false,{passive:true}));
+    setInterval(()=>{if(hold)return;const i=Math.round(nl.scrollLeft/step());nl.scrollTo({left:((i+1)%cards.length)*step()})},5000)}
   $('#news').hidden=false;document.querySelectorAll('#newsList .reveal').forEach(el=>io.observe(el));
 }).catch(()=>{});
 const FIXED=[
