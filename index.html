@@ -99,6 +99,7 @@ section{padding:84px 0}
 .vframe .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);background:repeating-linear-gradient(135deg,#0f0f0f 0 18px,#131313 18px 36px)}
 .vframe .empty .play{width:76px;height:76px;margin:0 auto 12px;border-radius:50%;border:3px solid var(--org);display:grid;place-items:center}
 .vframe .empty .play::after{content:"";border-left:22px solid var(--org);border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px}
+.vframe.vert{aspect-ratio:auto;height:min(82vh,760px);max-width:420px;margin-left:auto;margin-right:auto}
 .vlist{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .vlist button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font:700 14px "Noto Sans TC";cursor:pointer}
 .vlist button.on,.vlist button:hover{background:var(--org);color:#111;border-color:var(--org)}
@@ -559,6 +560,7 @@ const CONFIG = {
   // 影片:貼 YouTube / Facebook / IG 影片網址，或 mp4 檔。可放多支。留空就顯示「影片預留位置」
   videos: [
     // { title: "EP1 救援實錄", url: "https://www.youtube.com/watch?v=xxxxxxxxxxx" },
+    { title: "旭馳實拍", url: "https://www.instagram.com/reel/DdjrhgoT6dm/" },
   ],
   // 店面資訊（請對照你的 Google 地圖填入）
   shop: {
@@ -713,6 +715,7 @@ function embed(url){
 }
 function showVideo(i){
   const v=CONFIG.videos[i];
+  $('#vframe').classList.toggle('vert',!!(v&&/instagram\.com/.test(v.url)));
   $('#vframe').innerHTML=v?embed(v.url):'<div class="empty"><div><div class="play"></div><b>影片預留位置</b><br><small>把影片網址貼到網頁設定區 CONFIG.videos 就會出現在這裡</small></div></div>';
   document.querySelectorAll('#vlist button').forEach((b,j)=>b.classList.toggle('on',j===i));
 }
