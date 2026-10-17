@@ -345,6 +345,13 @@ nav a{border-radius:0;padding:8px 22px;background:rgba(255,255,255,.07);clip-pat
 nav a:hover{background:rgba(255,122,0,.35);color:#fff;transform:translateX(3px)}
 nav a.on,nav a.on:hover{background:linear-gradient(100deg,var(--org),var(--org2));color:#111;transform:none}
 @media(max-width:560px){nav a{padding:8px 18px;font-size:13px}}
+
+/* 導覽按鍵：數字，目前頁與滑過時展開名稱 */
+nav a{display:inline-flex;align-items:center;padding:8px 20px}
+nav a b{font:400 22px/1 "Bebas Neue",sans-serif;letter-spacing:.05em}
+nav a span{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:13px;letter-spacing:.14em;transition:max-width .3s,opacity .25s,margin .3s}
+nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
+@media(max-width:560px){nav a{padding:7px 16px}nav a b{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -362,7 +369,7 @@ nav a.on,nav a.on:hover{background:linear-gradient(100deg,var(--org),var(--org2)
 <header id="hd"><div class="in">
   <a class="brand" href="#home"><img src="img/logo.png" alt=""><span><b>旭馳</b>車業</span></a>
   <nav id="nav">
-    <a href="#home">首頁</a><a href="#maintain">保養</a><a href="#repair">維修</a><a href="#mod">改裝</a><a href="#rescue">救援</a><a href="#newbike">新車</a>
+    <a href="#home" title="首頁" aria-label="首頁"><b>1</b><span>首頁</span></a><a href="#maintain" title="保養" aria-label="保養"><b>2</b><span>保養</span></a><a href="#repair" title="維修" aria-label="維修"><b>3</b><span>維修</span></a><a href="#mod" title="改裝" aria-label="改裝"><b>4</b><span>改裝</span></a><a href="#rescue" title="救援" aria-label="救援"><b>5</b><span>救援</span></a><a href="#newbike" title="新車" aria-label="新車"><b>6</b><span>新車</span></a>
   </nav>
   <button id="menuBtn" aria-label="開啟選單" aria-expanded="false" aria-controls="drawer"><i></i><i></i><i></i></button>
 </div></header>
