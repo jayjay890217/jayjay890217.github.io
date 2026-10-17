@@ -3,72 +3,709 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>旭馳車業</title>
-<meta name="description" content="旭馳車業｜新北新莊機車維修保養、道路救援、代步車。線上查詢維修紀錄與最新消息。">
-<meta name="theme-color" content="#0d0d0d">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff8a00'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='900' text-anchor='middle' fill='%230d0d0d' font-family='sans-serif'%3E旭%3C/text%3E%3C/svg%3E">
+<title>SYM 旭馳車業｜新莊機車保養維修改裝救援新車</title>
+<meta name="description" content="旭馳車業｜成交只是開始，服務才是我們在做的事。新莊機車保養、維修、改裝、道路救援、新車與中古車服務。">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
-  :root{--bg:#0d0d0d;--panel:#171717;--line:#2c2c2c;--org:#ff8a00;--txt:#f3eee6;--dim:#9d968b}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;min-height:100vh}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:720px;margin:0 auto;padding:40px 16px 32px}
-  header{text-align:center;margin-bottom:32px}
-  .tag{font-family:"Bebas Neue",sans-serif;letter-spacing:.2em;color:var(--org);font-size:15px}
-  h1{margin:4px 0 6px;font-size:40px;font-weight:900;letter-spacing:.08em}
-  h1 b{color:var(--org)}
-  .sub{color:var(--dim);margin:0}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .card{display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px;transition:border-color .15s,transform .15s}
-  .card:hover,.card:focus-visible{border-color:var(--org);transform:translateY(-2px);outline:none}
-  .ic{font-size:26px;line-height:1}
-  .t{font-weight:900;font-size:17px;margin-top:6px}
-  .d{color:var(--dim);font-size:13px}
-  .card.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:14px;background:var(--org);color:#111;border-color:var(--org)}
-  .card.wide .d{color:#3a2400}
-  .card.wide .t{margin:0}
-  .contact{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:700}
-  .btn:hover,.btn:focus-visible{border-color:var(--org);outline:none}
-  footer{margin-top:36px;text-align:center;color:var(--dim);font-size:13px}
-  @media (max-width:380px){h1{font-size:34px}.grid{gap:10px}.card{padding:16px 14px}}
+:root{--bg:#0a0a0a;--panel:#151515;--panel2:#1c1c1c;--line:#2a2a2a;--org:#ff7a00;--org2:#ffb000;--txt:#f4efe8;--dim:#a39b8f}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font:16px/1.7 "Noto Sans TC","Microsoft JhengHei",sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.bebas{font-family:"Bebas Neue",sans-serif;letter-spacing:.18em}
+
+/* ---------- 開場 LOGO 動畫 ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:#000;display:grid;place-items:center;transition:opacity .8s,visibility .8s}
+#splash.done{opacity:0;visibility:hidden}
+#splash .box{position:relative;width:min(60vw,320px);text-align:center}
+#splash img{width:100%;opacity:0;transform:scale(.6) translateX(-60px);filter:drop-shadow(0 0 0 rgba(255,122,0,0));animation:logoIn 1.4s .2s cubic-bezier(.2,.9,.2,1) forwards}
+#splash .bar{height:3px;background:var(--line);margin:22px auto 0;width:60%;overflow:hidden;border-radius:2px}
+#splash .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--org),var(--org2));animation:load 1.8s .1s ease-out forwards}
+#splash .t{margin-top:12px;color:var(--org);font-size:14px;opacity:0;animation:fade .6s 1s forwards}
+@keyframes logoIn{60%{opacity:1;transform:scale(1.04) translateX(0)}100%{opacity:1;transform:scale(1) translateX(0);filter:drop-shadow(0 0 28px rgba(255,122,0,.55))}}
+@keyframes load{to{width:100%}}
+@keyframes fade{to{opacity:1}}
+
+/* ---------- 頂部導覽 ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,backdrop-filter .3s}
+header.solid{background:rgba(10,10,10,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .in{max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;letter-spacing:.08em}
+.brand img{width:44px;height:auto;animation:pulse 3.2s ease-in-out infinite}
+.brand b{color:var(--org)}
+nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+nav a{padding:6px 12px;border-radius:999px;font-size:14px;font-weight:700;color:var(--dim);transition:.2s}
+nav a:hover,nav a.on{color:#111;background:var(--org)}
+@keyframes pulse{50%{filter:drop-shadow(0 0 12px rgba(255,122,0,.8));transform:scale(1.06)}}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--org),var(--org2));z-index:60}
+
+/* ---------- 跟著捲動的 LOGO(跑道) ---------- */
+#rider{position:fixed;right:14px;bottom:18px;z-index:40;width:70px;pointer-events:none;transition:transform .15s linear}
+#rider img{width:100%;animation:bob 1.2s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(255,122,0,.6))}
+#rider .trail{position:absolute;right:62px;top:46%;display:flex;flex-direction:column;gap:5px;opacity:0;transition:opacity .2s}
+#rider.go .trail{opacity:1}
+#rider .trail i{display:block;height:2px;width:34px;background:linear-gradient(90deg,transparent,var(--org));border-radius:2px;animation:speed .4s linear infinite}
+#rider .trail i:nth-child(2){width:48px;animation-delay:.1s}
+#rider .trail i:nth-child(3){width:26px;animation-delay:.2s}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-2deg)}}
+@keyframes speed{from{transform:translateX(10px);opacity:0}50%{opacity:1}to{transform:translateX(-14px);opacity:0}}
+
+/* ---------- 首屏 ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.hero .bg{position:absolute;inset:0;background:url(img/hero.jpg) center 60%/cover no-repeat;transform:scale(1.08);animation:zoom 14s ease-out forwards}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.25),rgba(0,0,0,.78) 80%),linear-gradient(180deg,rgba(0,0,0,.55),transparent 30%,rgba(10,10,10,1) 100%)}
+.hero .txt{position:relative;z-index:2;padding:0 20px}
+.hero .kicker{color:var(--org);font-size:18px}
+.hero h1{font-size:clamp(34px,7.2vw,76px);font-weight:900;line-height:1.25;margin:10px 0 18px;letter-spacing:.06em;text-shadow:0 4px 30px rgba(0,0,0,.8)}
+.hero h1 span{display:block}
+.hero h1 .o{color:var(--org);text-shadow:0 0 30px rgba(255,122,0,.55)}
+.hero .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;font-weight:900;border:2px solid var(--org);transition:.2s}
+.btn.fill{background:var(--org);color:#111}
+.btn.fill:hover{background:var(--org2);border-color:var(--org2);transform:translateY(-2px)}
+.btn.line:hover{background:var(--org);color:#111;transform:translateY(-2px)}
+.scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2;color:var(--dim);font-size:12px;letter-spacing:.3em;text-align:center}
+.scroll::after{content:"";display:block;width:2px;height:34px;margin:8px auto 0;background:linear-gradient(var(--org),transparent);animation:drip 1.6s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@keyframes zoom{to{transform:scale(1)}}
+.hero .txt>*{opacity:0;transform:translateY(24px)}
+body.ready .hero .txt>*{animation:rise .9s forwards}
+body.ready .hero .txt>*:nth-child(2){animation-delay:.2s}
+body.ready .hero .txt>*:nth-child(3){animation-delay:.45s}
+body.ready .hero .txt>*:nth-child(4){animation-delay:.65s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* ---------- 區塊共用 ---------- */
+section{padding:84px 0}
+.eyebrow{color:var(--org);font-size:15px}
+.title{font-size:clamp(28px,5vw,44px);font-weight:900;line-height:1.25;margin:4px 0 8px}
+.title b{color:var(--org)}
+.lead{color:var(--dim);max-width:640px}
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s,transform .8s}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- 影片框 ---------- */
+.video{padding-top:30px}
+.vframe{position:relative;margin-top:22px;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line);box-shadow:0 0 0 1px rgba(255,122,0,.15),0 20px 60px rgba(255,122,0,.08)}
+.vframe::before,.vframe::after{content:"";position:absolute;width:34px;height:34px;border:3px solid var(--org);z-index:3;pointer-events:none}
+.vframe::before{top:10px;left:10px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.vframe::after{bottom:10px;right:10px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.vframe iframe,.vframe video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vframe .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);background:repeating-linear-gradient(135deg,#0f0f0f 0 18px,#131313 18px 36px)}
+.vframe .empty .play{width:76px;height:76px;margin:0 auto 12px;border-radius:50%;border:3px solid var(--org);display:grid;place-items:center}
+.vframe .empty .play::after{content:"";border-left:22px solid var(--org);border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px}
+.vlist{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.vlist button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font:700 14px "Noto Sans TC";cursor:pointer}
+.vlist button.on,.vlist button:hover{background:var(--org);color:#111;border-color:var(--org)}
+
+/* ---------- 服務總覽卡 ---------- */
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:30px}
+.sc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 16px;transition:.25s;overflow:hidden}
+.sc:hover{border-color:var(--org);transform:translateY(-6px);box-shadow:0 14px 34px rgba(255,122,0,.15)}
+.sc .n{font-family:"Bebas Neue";font-size:44px;line-height:1;color:var(--org);opacity:.9}
+.sc h3{font-size:20px;font-weight:900;margin:6px 0 2px}
+.sc p{font-size:13px;color:var(--dim);line-height:1.5}
+
+/* ---------- 服務詳細 ---------- */
+.svc{display:none;padding:30px 0 70px;scroll-margin-top:80px}
+.svc.active{display:block;animation:tabin .45s ease}
+@keyframes tabin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+#services{border-top:1px solid var(--line)}
+.sc.on{border-color:var(--org);background:linear-gradient(160deg,#2a1700,var(--panel));box-shadow:0 0 0 1px var(--org),0 14px 34px rgba(255,122,0,.2)}
+.sc.on::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);border:9px solid transparent;border-bottom-color:var(--org)}
+.sc{cursor:pointer}
+.svhead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.svhead .big{font-family:"Bebas Neue";font-size:clamp(70px,12vw,130px);line-height:.8;color:transparent;-webkit-text-stroke:2px var(--org);opacity:.85}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.box h4{font-size:19px;font-weight:900;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.box h4::before{content:"";width:6px;height:20px;background:var(--org);border-radius:3px}
+.box p,.box li{color:#d6cfc4;font-size:15px}
+.box ul{padding-left:0;list-style:none;display:grid;gap:6px}
+.box li::before{content:"▸ ";color:var(--org)}
+.note{margin-top:14px;font-size:13px;color:var(--dim)}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+.tbl th{text-align:left;color:var(--org);font-weight:700;padding:8px 10px;border-bottom:2px solid var(--org);white-space:nowrap}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;color:#d6cfc4}
+.tbl td:first-child{font-weight:900;color:var(--txt);white-space:nowrap}
+.tbl .pr{color:var(--org2);font-weight:700;white-space:nowrap}
+.tblwrap{overflow-x:auto}
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.mod{background:var(--panel2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mod .ph{aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#101010 0 14px,#161616 14px 28px);display:grid;place-items:center;color:var(--dim);font-size:13px}
+.mod .ph img{width:100%;height:100%;object-fit:cover}
+.mod .b{padding:12px 14px}
+.mod .b b{display:block}
+.mod .b span{color:var(--org2);font-weight:700;font-size:14px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.step{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;color:#d6cfc4}
+.step b{display:block;color:var(--org);font-family:"Bebas Neue";font-size:26px;line-height:1}
+.hot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(100deg,var(--org),var(--org2));color:#111;border-radius:16px;padding:20px 24px;margin-bottom:16px}
+.hot b{font-size:22px}
+.hot a{margin-left:auto;background:#111;color:var(--org2);padding:10px 22px;border-radius:999px;font-weight:900}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tags span{border:1px solid var(--org);color:var(--org2);padding:5px 14px;border-radius:999px;font-weight:700;font-size:14px}
+
+/* ---------- 地圖與資訊 ---------- */
+.info{background:#0d0d0d;border-top:1px solid var(--line)}
+.mapgrid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:26px}
+.map{border-radius:18px;overflow:hidden;border:1px solid var(--line);min-height:380px;background:#111}
+.map iframe{width:100%;height:100%;min-height:380px;border:0;filter:grayscale(.55) invert(.9) hue-rotate(180deg) contrast(.9)}
+.map.light iframe{filter:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:16px;align-content:start}
+.row{display:flex;gap:14px}
+.row .ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--org);color:#111;display:grid;place-items:center;font-size:18px}
+.row small{display:block;color:var(--dim);font-size:12px;letter-spacing:.1em}
+.row div b{font-size:16px}
+footer{padding:30px 0 90px;text-align:center;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+footer img{width:70px;margin:0 auto 8px}
+
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,1fr)}.cards .sc:last-child{grid-column:1/-1}
+  .grid2,.mapgrid{grid-template-columns:1fr}
+  .mods{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}
+  nav a{padding:5px 9px;font-size:13px}
+}
+@media(max-width:560px){
+  section{padding:60px 0}
+  nav{display:none}
+  .mods{grid-template-columns:1fr}
+  #rider{width:54px}
+}
+
+/* ===== 阿鴻部品風格強化 ===== */
+body{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 2px,transparent 2px 16px)}
+.announce{position:fixed;top:0;left:0;right:0;z-index:55;height:34px;background:var(--org);color:#111;font-weight:900;font-size:13px;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 10px;white-space:nowrap;overflow:hidden}
+.announce i{font-style:normal;opacity:.55}
+header{top:34px}
+.progress{top:34px}
+.hero{padding-top:34px}
+.btn{border:0;border-radius:0;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);padding:14px 30px;letter-spacing:.1em}
+.btn.line{box-shadow:inset 0 0 0 2px var(--org);background:rgba(0,0,0,.35)}
+.btn.fill{background:linear-gradient(100deg,var(--org),var(--org2))}
+.title{letter-spacing:.06em}
+.title.center,.eyebrow.center,.lead.center{text-align:center}
+.title.arrow::before{content:"▶ ";color:var(--org);font-size:.55em;vertical-align:middle}
+.title.arrow::after{content:" ◀";color:var(--org);font-size:.55em;vertical-align:middle}
+.tag-out{display:table;margin:34px auto 0;border:2px solid var(--org);color:var(--org);padding:4px 34px;font-weight:900;letter-spacing:.3em;position:relative}
+.tag-out::before,.tag-out::after{content:"";position:absolute;top:50%;width:46px;height:2px;background:var(--org)}
+.tag-out::before{right:100%}.tag-out::after{left:100%}
+.cards{gap:14px}
+.sc{border-radius:0;border:1px solid var(--line);border-top:3px solid var(--org);text-align:center;padding:22px 14px 18px;background:linear-gradient(180deg,#1b1b1b,#111)}
+.sc .n{font-size:60px;color:transparent;-webkit-text-stroke:2px var(--org)}
+.sc h3{border:1px solid var(--org);color:var(--org2);margin:8px 0 10px;padding:3px 0;letter-spacing:.35em;font-size:17px}
+.sc h3::before{content:"- "}.sc h3::after{content:" -"}
+.sc p{font-size:12.5px}
+.sc.on h3{background:var(--org);color:#111}
+.box{border-radius:0;border-top:3px solid var(--org);background:linear-gradient(180deg,#191919,#121212)}
+.step,.mod{border-radius:0}
+.vframe{border-radius:0}
+.svhead{position:relative;min-height:90px}
+.svhead::before{content:attr(data-en);position:absolute;right:0;top:-6px;font-family:"Bebas Neue",sans-serif;font-size:clamp(54px,13vw,160px);line-height:.9;color:transparent;-webkit-text-stroke:1px #3a3a3a;letter-spacing:.06em;pointer-events:none;z-index:0}
+.svhead>*{position:relative;z-index:1}
+.hero .ghost{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);font-family:"Bebas Neue",sans-serif;font-size:clamp(70px,16vw,230px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.22);white-space:nowrap;z-index:1;letter-spacing:.08em;pointer-events:none}
+.hero::before{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;z-index:3;background:repeating-linear-gradient(115deg,var(--org) 0 28px,#111 28px 40px)}
+.fcols{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:28px;text-align:left;max-width:1080px;margin:0 auto 24px;padding:0 20px}
+.fcols h5{font-size:15px;color:var(--txt);margin-bottom:8px;letter-spacing:.1em}
+.fcols h5::before{content:"";display:inline-block;width:5px;height:15px;background:var(--org);margin-right:8px;vertical-align:-2px}
+.fcols p,.fcols a{display:block;color:var(--dim);font-size:13.5px;line-height:1.9}
+.fcols a:hover{color:var(--org)}
+@media(max-width:900px){.fcols{grid-template-columns:1fr 1fr}.fcols>div:first-child{grid-column:1/-1}}
+@media(max-width:560px){.announce{font-size:11.5px}.announce .hide-m{display:none}.sc .n{font-size:46px}}
+
+.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:26px}
+.ncard{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--org);overflow:hidden;display:flex;flex-direction:column}
+.ncard .pic{position:relative;aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#101010 0 14px,#161616 14px 28px)}
+.ncard .pic img{width:100%;height:100%;object-fit:cover}
+.ncard .badge{position:absolute;left:0;top:12px;background:var(--org);color:#111;font-weight:900;font-size:12px;padding:3px 12px 3px 10px;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.ncard .t{padding:14px 16px 18px}
+.ncard h3{font-size:18px;font-weight:900;margin-bottom:4px}
+.ncard p{color:#d6cfc4;font-size:14px;white-space:pre-line}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:26px}
+.lk{display:block;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--org);padding:14px 16px;transition:.2s}
+.lk:hover{transform:translateY(-3px);border-color:var(--org)}
+.lk small{color:var(--org);letter-spacing:.15em;font-size:11px}
+.lk b{display:block;font-size:16px}
+.lk span{color:var(--dim);font-size:13px}
+.cta2{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.cta2 .btn{padding:11px 22px;font-size:14px}
+.rulebar{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin:6px 0 14px;padding:10px 0;border-block:1px dashed #4a4a4a;font-weight:700;color:#d6cfc4}
+.rulebar b{color:var(--org2);text-align:right}
+.modes{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--org);position:relative}
+.modes label{cursor:pointer;text-align:center;font-weight:900;font-size:14px}
+.modes input{position:absolute;opacity:0}
+.modes span{display:block;padding:9px 6px}
+.modes label:has(input:checked) span{background:var(--org);color:#111}
+.kmrow{display:flex;align-items:center;gap:8px;margin-top:12px}
+.kmrow button{width:44px;height:44px;border:2px solid var(--org);background:transparent;color:var(--org);font:900 22px sans-serif;cursor:pointer}
+.kmrow input{flex:1;min-width:0;background:#0d0d0d;color:var(--txt);border:2px solid var(--line);font:900 26px "Noto Sans TC";text-align:center;padding:3px 6px}
+.rtotal{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;padding-top:12px;border-top:2px solid var(--org)}
+.rtotal b{font-family:"Bebas Neue";font-size:54px;line-height:1;color:var(--org2);letter-spacing:.04em}
+
+header .in{gap:8px}
+nav{margin-left:auto}
+#veil{position:fixed;inset:0;z-index:118;background:rgba(0,0,0,.65);opacity:0;visibility:hidden;transition:.3s}
+#veil.on{opacity:1;visibility:visible}
+body.lock{overflow:hidden}
+
+/* ===== 純文字側邊選單 ===== */
+#menuBtn{display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:6px;width:40px;height:40px;padding:0 6px;background:transparent;border:0;cursor:pointer;flex:none;margin-left:10px}
+#menuBtn i{display:block;height:2px;width:26px;background:var(--txt);transition:width .3s,background .3s}
+#menuBtn i:nth-child(2){width:18px}#menuBtn i:nth-child(3){width:22px}
+#menuBtn:hover i{background:var(--org);width:26px}
+@media(max-width:560px){#menuBtn{margin-left:auto}}
+#drawer{position:fixed;top:0;right:0;bottom:0;z-index:120;width:min(92vw,460px);background:rgba(8,8,8,.97);backdrop-filter:blur(14px);transform:translateX(100%);transition:transform .55s cubic-bezier(.77,0,.18,1);overflow-y:auto;padding:26px clamp(26px,6vw,56px) 40px;visibility:hidden;display:flex;flex-direction:column}
+#drawer.on{transform:none;visibility:visible}
+#menuClose{align-self:flex-end;display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--dim);font:400 12px "Bebas Neue",sans-serif;letter-spacing:.35em;cursor:pointer;padding:6px 0;transition:color .25s}
+#menuClose i{position:relative;width:22px;height:22px}
+#menuClose i::before,#menuClose i::after{content:"";position:absolute;left:0;top:50%;width:22px;height:1px;background:currentColor;transform:rotate(45deg);transition:transform .35s}
+#menuClose i::after{transform:rotate(-45deg)}
+#menuClose:hover{color:var(--org)}#menuClose:hover i::before{transform:rotate(135deg)}#menuClose:hover i::after{transform:rotate(45deg)}
+.mnav{margin-top:clamp(18px,5vh,48px);display:flex;flex-direction:column}
+.mnav a{display:grid;grid-template-columns:34px 1fr;align-items:baseline;padding:11px 0;color:var(--txt);transition:transform .45s cubic-bezier(.2,.8,.2,1),color .3s}
+.mnav u{text-decoration:none;font:400 12px "Bebas Neue",sans-serif;letter-spacing:.2em;color:#555;transition:color .3s}
+.mnav b{font-size:clamp(30px,5.4vh,40px);font-weight:300;letter-spacing:.2em;line-height:1.2}
+.mnav em{grid-column:2;font-style:normal;font-size:13px;letter-spacing:.08em;color:#8a8a8a;max-height:0;opacity:0;overflow:hidden;transform:translateY(-6px);transition:max-height .45s,opacity .35s,transform .35s}
+.mnav a:hover,.mnav a:focus-visible{transform:translateX(10px);color:var(--org);outline:0}
+.mnav a:hover u,.mnav a:focus-visible u{color:var(--org)}
+.mnav a:hover em,.mnav a:focus-visible em{max-height:30px;opacity:1;transform:none;margin-top:4px}
+.mmore{margin-top:clamp(28px,8vh,70px);display:flex;flex-direction:column;gap:34px}
+.mgrp{display:flex;flex-direction:column}
+.mmore a{display:block;padding:9px 0;color:#bdb6aa;transition:transform .4s,color .3s}
+.mmore b{font-size:17px;font-weight:400;letter-spacing:.16em}
+.mmore em{display:block;font-style:normal;font-size:13px;letter-spacing:.06em;color:#7d7d7d;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .3s}
+.mmore a:hover,.mmore a:focus-visible{transform:translateX(8px);color:var(--org);outline:0}
+.mmore a:hover em,.mmore a:focus-visible em{max-height:24px;opacity:1}
+.mfoot{margin-top:auto;padding-top:36px;display:flex;gap:26px;flex-wrap:wrap;font-size:13px;letter-spacing:.18em;color:var(--dim)}
+.mfoot a{border-bottom:1px solid #333;padding-bottom:3px;transition:.25s}
+.mfoot a:hover{color:var(--org);border-color:var(--org)}
+#drawer .mmore a{opacity:0;transform:translateX(26px)}
+#drawer.on .mmore a{animation:mIn .7s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i,0)*55ms + 180ms)}
+@keyframes mIn{to{opacity:1;transform:none}}
+@media(hover:none){.mnav em{max-height:30px;opacity:1;transform:none;margin-top:2px}.mmore em{max-height:24px;opacity:1}}
+
+.mtitle{position:relative;align-self:flex-start;margin:0 0 14px;padding:9px 26px 9px 24px;border:1px solid #3a3a3a;display:flex;align-items:baseline}
+.mtitle::before,.mtitle::after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--org)}
+.mtitle::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
+.mtitle::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
+.mtitle small{font:400 11px "Bebas Neue",sans-serif;letter-spacing:.3em;color:var(--org)}
+.mtitle span{font-size:15px;font-weight:700;letter-spacing:.3em;color:var(--txt)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header>
-    <div class="tag">XUCHI MOTO</div>
-    <h1><b>旭馳</b>車業</h1>
-    <p class="sub">機車維修保養・道路救援・代步車</p>
-  </header>
+<div class="announce"><span>📍 新莊豐年街55-10號</span><i class="hide-m">|</i><span class="hide-m">週日～週五 11:00–21:00・週六公休</span><i>|</i><a href="https://line.me/R/ti/p/%40f22048272" target="_blank" rel="noopener">LINE 預約 ▶</a></div>
+<div class="progress" id="progress"></div>
 
-  <nav class="grid" aria-label="服務入口">
-    <a class="card wide" href="https://service.xuchi-moto.com/rescue/">
-      <span class="ic" aria-hidden="true">🚨</span>
-      <span><span class="t">道路救援</span><br><span class="d">車子拋錨？先看這裡，一鍵傳 LINE 給我們</span></span>
-    </a>
-    <a class="card" href="https://service.xuchi-moto.com/mycar/">
-      <span class="ic" aria-hidden="true">🛵</span><span class="t">我的愛車</span><span class="d">查詢維修保養紀錄</span>
-    </a>
-    <a class="card" href="https://service.xuchi-moto.com/news/">
-      <span class="ic" aria-hidden="true">📣</span><span class="t">最新資訊</span><span class="d">營業時間、優惠活動</span>
-    </a>
-    <a class="card" href="https://service.xuchi-moto.com/qa/">
-      <span class="ic" aria-hidden="true">🔧</span><span class="t">老闆，這台車…</span><span class="d">常見問題一次看</span>
-    </a>
-    <a class="card" href="https://service.xuchi-moto.com/more/">
-      <span class="ic" aria-hidden="true">✨</span><span class="t">更多服務</span><span class="d">保險、原廠官網、社群</span>
-    </a>
+<!-- 開場 LOGO 動畫 -->
+<div id="splash"><div class="box">
+  <img src="img/logo.png" alt="旭馳車業">
+  <div class="bar"><i></i></div>
+  <div class="t bebas">XUCHI MOTO</div>
+</div></div>
+
+<header id="hd"><div class="in">
+  <a class="brand" href="#top"><img src="img/logo.png" alt=""><span><b>旭馳</b>車業</span></a>
+  <nav id="nav">
+    <a href="#maintain">保養</a><a href="#repair">維修</a><a href="#mod">改裝</a><a href="#rescue">救援</a><a href="#newbike">新車</a><a href="#visit">交通</a>
   </nav>
+  <button id="menuBtn" aria-label="開啟選單" aria-expanded="false" aria-controls="drawer"><i></i><i></i><i></i></button>
+</div></header>
 
-  <div class="contact">
-    <a class="btn" href="tel:0222048272">📞 02-2204-8272</a>
-    <a class="btn" href="https://line.me/R/ti/p/%40f22048272">💬 加入 LINE 官方帳號</a>
+<!-- 跟著捲動的 LOGO -->
+<div id="rider" aria-hidden="true"><div class="trail"><i></i><i></i><i></i></div><img src="img/logo.png" alt=""></div>
+
+<!-- 側邊選單 -->
+<div id="veil"></div>
+<aside id="drawer" aria-label="選單" aria-hidden="true">
+  <button id="menuClose" aria-label="關閉選單"><span>CLOSE</span><i></i></button>
+  <div class="mmore" id="moreLinks" aria-label="更多服務"></div>
+</aside>
+
+<main id="top">
+<!-- 首屏:一張照片 + 一句話 -->
+<div class="hero">
+  <div class="bg"></div>
+  <div class="txt">
+    <div class="kicker bebas">XUCHI MOTO · XINZHUANG</div>
+    <h1><span>成交只是開始</span><span class="o">服務才是我們在做的事</span></h1>
+    <div class="cta">
+      <a class="btn fill" href="https://line.me/R/ti/p/%40f22048272" target="_blank" rel="noopener">💬 LINE 預約諮詢</a>
+      <a class="btn line" href="tel:0222048272">📞 02-2204-8272</a>
+    </div>
+  </div>
+  <div class="ghost" aria-hidden="true">XUCHI MOTO</div>
+  <div class="scroll bebas">SCROLL</div>
+</div>
+
+<!-- 最新消息 -->
+<section id="news" hidden style="padding-top:20px"><div class="wrap">
+  <div class="eyebrow bebas reveal center">NEWS</div>
+  <h2 class="title arrow center reveal">旭馳<b>最新消息</b></h2>
+  <div class="news" id="newsList"></div>
+</div></section>
+
+<!-- 影片框(最上方) -->
+<section class="video" id="video"><div class="wrap">
+  <div class="eyebrow bebas reveal center">WATCH</div>
+  <h2 class="title arrow center reveal">旭馳<b>實拍影片</b></h2>
+  <div class="vframe reveal" id="vframe"></div>
+  <div class="vlist reveal" id="vlist"></div>
+</div></section>
+
+<!-- 服務總覽 -->
+<section style="padding-top:20px"><div class="wrap">
+  <div class="eyebrow bebas reveal center">SERVICES</div>
+  <h2 class="title arrow center reveal">依服務<b>選擇</b></h2>
+  <div class="cards">
+    <a class="sc reveal" href="#maintain" data-tab="maintain" role="tab"><div class="n">01</div><h3>保養</h3><p>基礎保養／大保養<br>里程對照換件</p></a>
+    <a class="sc reveal" href="#repair" data-tab="repair" role="tab"><div class="n">02</div><h3>維修</h3><p>一般查修<br>車禍維修估價</p></a>
+    <a class="sc reveal" href="#mod" data-tab="mod" role="tab"><div class="n">03</div><h3>改裝</h3><p>改裝範例<br>品項與價位</p></a>
+    <a class="sc reveal" href="#rescue" data-tab="rescue" role="tab"><div class="n">04</div><h3>救援</h3><p>費用與內容<br>拋錨別慌</p></a>
+    <a class="sc reveal" href="#newbike" data-tab="newbike" role="tab"><div class="n">05</div><h3>新車</h3><p>服務品牌<br>舊車服務</p></a>
+  </div>
+</div></section>
+
+<div id="services">
+<!-- 01 保養 -->
+<section class="svc" id="maintain"><div class="wrap">
+  <div class="svhead reveal" data-en="MAINTENANCE"><div class="big">01</div><div><div class="eyebrow bebas">MAINTENANCE</div><h2 class="title">保<b>養</b></h2></div></div>
+  <div class="grid2">
+    <div class="box reveal"><h4>基礎保養</h4>
+      <p>日常騎乘的「體檢」，建議每 1 個月或每 1,000～2,000 公里做一次。</p>
+      <ul style="margin-top:10px">
+        <li>機油更換</li><li>齒輪油更換（速克達）</li><li>空氣濾清器檢查／清潔</li>
+        <li>煞車來令片、煞車油量檢查</li><li>胎壓、胎紋、電瓶、燈光檢查</li>
+      </ul>
+      <div class="note" data-edit="price">基礎保養工資：依車款報價，歡迎 LINE 詢問</div>
+    </div>
+    <div class="box reveal"><h4>大保養</h4>
+      <p>針對「傳動、引擎、煞車」做整體清潔與換件，讓車況回到最佳狀態。</p>
+      <ul style="margin-top:10px">
+        <li>傳動系統：皮帶、普利珠、滑動片、離合器檢查更換</li>
+        <li>火星塞、空濾、齒輪油、機油全部更新</li>
+        <li>煞車系統檢查、煞車油更換</li>
+        <li>節氣門／噴油嘴清潔</li>
+      </ul>
+      <div class="note" data-edit="price">大保養費用：依車款與換件項目報價，歡迎 LINE 詢問</div>
+    </div>
   </div>
 
-  <footer>© 旭馳車業 · www.xuchi-moto.com</footer>
+  <div class="box reveal" style="margin-top:16px"><h4>里程該換什麼？（速克達參考表）</h4>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>項目</th><th>建議時機</th><th>為什麼要換</th></tr>
+      <tr><td>機油</td><td>1,000～2,000 km 或 3 個月</td><td>潤滑、散熱、帶走雜質，最基本也最重要</td></tr>
+      <tr><td>齒輪油</td><td>每 3,000 km 或半年</td><td>保護後齒輪組，避免異音與磨損</td></tr>
+      <tr><td>空氣濾清器</td><td>每 6,000 km</td><td>太髒會吃油、無力、起步抖</td></tr>
+      <tr><td>火星塞</td><td>8,000～10,000 km</td><td>影響起動、油耗與加速順暢度</td></tr>
+      <tr><td>煞車來令片</td><td>依磨損，約 10,000～15,000 km</td><td>安全第一，磨到底會傷煞車碟</td></tr>
+      <tr><td>傳動皮帶／普利珠／滑動片</td><td>15,000～20,000 km</td><td>加速無力、抖動、異音的主因</td></tr>
+      <tr><td>煞車油</td><td>每 2 年</td><td>吸水變質會讓煞車變軟</td></tr>
+      <tr><td>電瓶</td><td>約 2～3 年</td><td>冷車難發、電壓不穩的來源</td></tr>
+    </table></div>
+    <div class="note">※ 以上為一般參考，實際依車款、騎乘習慣與車況為準，到店檢查後會告知建議項目。</div>
+  </div>
+
+  <div class="box reveal" style="margin-top:16px"><h4>為什麼要做大保養？</h4>
+    <div class="steps">
+      <div class="step"><b>01</b>預防比搶修便宜：小零件提早換，避免連帶壞大件</div>
+      <div class="step"><b>02</b>騎得更順：恢復加速、降低抖動與異音</div>
+      <div class="step"><b>03</b>更省油：傳動與進氣乾淨，油耗自然回來</div>
+      <div class="step"><b>04</b>更安全：煞車、輪胎、傳動一次全檢查</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 維修 -->
+<section class="svc" id="repair"><div class="wrap">
+  <div class="svhead reveal" data-en="REPAIR"><div class="big">02</div><div><div class="eyebrow bebas">REPAIR</div><h2 class="title">維<b>修</b></h2></div></div>
+  <div class="grid2">
+    <div class="box reveal"><h4>一般問題查修</h4>
+      <p>難發動、怠速不穩、異音、漏油、電系問題…先檢查再報價，不亂換件。</p>
+      <ul style="margin-top:10px">
+        <li>先說明故障原因，再討論維修方式</li>
+        <li>換下的舊零件可以給你看</li>
+        <li>維修紀錄可在「我的愛車」線上查詢</li>
+      </ul>
+      <div class="note" data-edit="price">查修費：到店檢測後說明，歡迎 LINE 詢問</div>
+    </div>
+    <div class="box reveal"><h4>車禍維修</h4>
+      <p>摔車、碰撞後的外觀、車架、前叉、傳動系統檢查與修復。</p>
+      <div class="steps" style="grid-template-columns:1fr 1fr;margin-top:10px">
+        <div class="step"><b>01</b>拍照與初步檢查</div>
+        <div class="step"><b>02</b>列出維修項目與估價</div>
+        <div class="step"><b>03</b>確認後施工、報進度</div>
+        <div class="step"><b>04</b>完工試車、交車說明</div>
+      </div>
+      <div class="note">有保險理賠需求也歡迎詢問，可協助提供估價單與維修明細。</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 03 改裝 -->
+<section class="svc" id="mod"><div class="wrap">
+  <div class="svhead reveal" data-en="MODIFY"><div class="big">03</div><div><div class="eyebrow bebas">CUSTOM</div><h2 class="title">改<b>裝</b></h2></div></div>
+  <div class="box reveal"><h4>改裝範例</h4>
+    <div class="mods" id="mods"></div>
+    <div class="note">※ 照片可替換成你的施工實車；價格為參考，依車款與品牌而異。</div>
+  </div>
+  <div class="box reveal" style="margin-top:16px"><h4>常見改裝品項與價位</h4>
+    <div class="tblwrap"><table class="tbl" id="modtbl"></table></div>
+  </div>
+</div></section>
+
+<!-- 04 救援 -->
+<section class="svc" id="rescue"><div class="wrap">
+  <div class="svhead reveal" data-en="RESCUE"><div class="big">04</div><div><div class="eyebrow bebas">RESCUE</div><h2 class="title">救<b>援</b></h2></div></div>
+  <div class="hot reveal"><span style="font-size:30px">🚨</span><div><b>車子拋錨？先傳 LINE 給我們</b><br>傳車牌、位置、車況和四周照片，我們盡快回覆。</div><a href="#" id="rescueLine" target="_blank" rel="noopener">LINE 求救</a></div>
+  <div class="grid2">
+    <div class="box reveal"><h4>救援三步驟</h4>
+      <div class="steps" style="grid-template-columns:1fr">
+        <div class="step"><b>01</b>先到安全的地方：人離開車道、打雙黃燈，不要站在車後。</div>
+        <div class="step"><b>02</b>拍照：車牌、車子前後左右，讓師傅先看狀況。</div>
+        <div class="step"><b>03</b>LINE 傳「車牌、停放地點、車輛狀況」＋照片；很急就直接打 <a href="tel:0222048272" style="color:var(--org2);font-weight:900">02-2204-8272</a>。</div>
+      </div>
+    </div>
+    <div class="box reveal"><h4>救援內容</h4>
+      <ul>
+        <li>拖吊／運送回旭馳維修</li><li>現場快速處理（沒電、爆胎、小問題）</li>
+        <li>事故車輛運送</li><li>運送後直接檢測、估價</li>
+      </ul>
+      <div class="note">實際費用以出車里程為準，師傅會在出發前跟你確認，不亂收費。</div>
+    </div>
+  </div>
+  <div class="box reveal" style="margin-top:16px"><h4>救援費用試算</h4>
+    <div class="rulebar"><span>出車 2 公里內</span><b>一律 $500</b><span>超過 2 公里</span><b>每公里 +$50</b></div>
+    <div class="modes" role="radiogroup" aria-label="計費方式">
+      <label><input type="radio" name="rmode" value="shop" checked><span>載回旭馳維修</span></label>
+      <label><input type="radio" name="rmode" value="other"><span>載到其他地方</span></label>
+    </div>
+    <p class="note" id="rhint" style="margin-top:8px"></p>
+    <div class="kmrow"><button type="button" id="rminus" aria-label="減少 1 公里">−</button><input id="rkm" type="number" inputmode="decimal" min="0" max="60" step="0.5" value="5" aria-label="公里數"><span>km</span><button type="button" id="rplus" aria-label="增加 1 公里">+</button></div>
+    <input type="range" id="rrange" min="0" max="30" step="0.5" value="5" aria-label="公里數滑桿" style="width:100%;margin-top:12px;accent-color:var(--org)">
+    <div class="rtotal"><span>預估費用</span><b id="ramt">$650</b></div>
+    <div class="note" id="rcalc" style="text-align:right"></div>
+  </div>
+</div></section>
+
+<!-- 05 新車 -->
+<section class="svc" id="newbike"><div class="wrap">
+  <div class="svhead reveal" data-en="NEW BIKE"><div class="big">05</div><div><div class="eyebrow bebas">NEW &amp; USED</div><h2 class="title">新<b>車</b></h2></div></div>
+  <div class="grid2">
+    <div class="box reveal"><h4>服務品牌</h4>
+      <p>新車購買、分期、牌照保險一次辦理。</p>
+      <div class="tags"><span>SYM 三陽（主力）</span><span>其他品牌歡迎洽詢</span></div>
+      <div class="note">汰舊換新補助可協助辦理，詳情 LINE 詢問。</div>
+    </div>
+    <div class="box reveal"><h4>舊車服務</h4>
+      <ul>
+        <li>中古車買賣、車況透明說明</li>
+        <li>舊車估價、折抵換購</li>
+        <li>汰舊換新（廠商匯退）</li>
+        <li>過戶、保險代辦</li>
+      </ul>
+      <div class="note">買車後保養維修都在同一家，這就是「成交只是開始」。</div>
+      <div class="cta2"><a class="btn fill" href="https://bike.xuchi-moto.com/price.html" target="_blank" rel="noopener">新車價格查詢</a><a class="btn line" href="https://bike.xuchi-moto.com/poster.html" target="_blank" rel="noopener">購車須知</a></div>
+    </div>
+  </div>
+</div></section>
+
+</div>
+<!-- 地圖與店面資訊 -->
+<section class="info" id="visit"><div class="wrap">
+  <div class="eyebrow bebas reveal center">VISIT US</div>
+  <h2 class="title arrow center reveal">歡迎<b>來店</b></h2>
+  <div class="mapgrid">
+    <div class="map reveal"><iframe id="gmap" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="旭馳車業 Google 地圖"></iframe></div>
+    <div class="card reveal">
+      <div class="row"><div class="ic">📍</div><div><small>ADDRESS</small><b id="i-addr"></b></div></div>
+      <div class="row"><div class="ic">🕒</div><div><small>HOURS</small><b id="i-hours"></b></div></div>
+      <div class="row"><div class="ic">📞</div><div><small>PHONE</small><b><a id="i-tel"></a></b></div></div>
+      <div class="row"><div class="ic">💬</div><div><small>LINE</small><b><a id="i-line" target="_blank" rel="noopener"></a></b></div></div>
+      <a class="btn fill" id="i-nav" target="_blank" rel="noopener" style="justify-content:center">🧭 開啟 Google 導航</a>
+    </div>
+  </div>
+</div></section>
 </main>
+
+<footer>
+<div class="fcols">
+  <div><img src="img/logo.png" alt="" style="width:74px;margin:0 0 8px"><p>成交只是開始，服務才是我們在做的事。</p><p>SYM 旭馳車業</p></div>
+  <div><h5>聯絡我們</h5><a href="tel:0222048272">電話 / 02-2204-8272</a><p>週日～週五 11:00–21:00</p><p>週六公休</p><p>242 新北市新莊區豐年街55-10號</p><a href="https://line.me/R/ti/p/%40f22048272" target="_blank" rel="noopener">LINE / @f22048272</a></div>
+  <div><h5>服務項目</h5><a href="#maintain">保養</a><a href="#repair">維修</a><a href="#mod">改裝</a><a href="#rescue">救援</a><a href="#newbike">新車</a><a href="https://service.xuchi-moto.com/mycar/">我的愛車</a></div>
+</div>
+<div>© 旭馳車業 · 成交只是開始，服務才是我們在做的事</div></footer>
+
+<script>
+/* =====================================================
+   ▼▼ 想改內容，只要改這一區 ▼▼
+   ===================================================== */
+const CONFIG = {
+  // 影片:貼 YouTube / Facebook / IG 影片網址，或 mp4 檔。可放多支。留空就顯示「影片預留位置」
+  videos: [
+    // { title: "EP1 救援實錄", url: "https://www.youtube.com/watch?v=xxxxxxxxxxx" },
+  ],
+  // 店面資訊（請對照你的 Google 地圖填入）
+  shop: {
+    name: "旭馳車業",
+    address: "242 新北市新莊區豐年街55-10號",
+    hours: "週日～週五 11:00–21:00｜週六公休",
+    phone: "02-2204-8272",
+    line: "@f22048272",
+    lineUrl: "https://line.me/R/ti/p/%40f22048272",
+    // 地圖搜尋關鍵字：填「店名+地址」最準；也可以貼 Google 地圖「分享→嵌入地圖」給的 src 網址到 mapEmbed
+    mapQuery: "SYM 旭馳車業 新北市新莊區豐年街55-10號",
+    mapEmbed: ""
+  },
+  // 改裝範例（img 放照片路徑，例如 "img/mod1.jpg"）
+  mods: [
+    { name: "排氣管改裝", price: "歡迎洽詢", img: "" },
+    { name: "避震器升級", price: "歡迎洽詢", img: "" },
+    { name: "LED 燈組／尾燈", price: "歡迎洽詢", img: "" }
+  ],
+  // 改裝品項與價位表
+  modTable: [
+    ["排氣管","提升聲浪與排氣效率","歡迎洽詢"],
+    ["避震器","舒適性與操控","歡迎洽詢"],
+    ["煞車卡鉗／碟盤","煞車力道提升","歡迎洽詢"],
+    ["燈光（大燈／方向燈／尾燈）","夜間照明與外觀","歡迎洽詢"],
+    ["傳動套件（普利盤／離合器）","加速與極速調整","歡迎洽詢"],
+    ["把手／後照鏡／手把座","外觀與操控","歡迎洽詢"]
+  ]
+};
+/* ===================================================== */
+
+const $=s=>document.querySelector(s);
+
+/* 開場動畫 */
+addEventListener('load',()=>setTimeout(()=>{$('#splash').classList.add('done');document.body.classList.add('ready')},2100));
+setTimeout(()=>{$('#splash').classList.add('done');document.body.classList.add('ready')},4500);
+
+/* 捲動：導覽、進度條、跟著跑的 LOGO */
+const rider=$('#rider'),hd=$('#hd'),prog=$('#progress');let lastY=0,tm;
+addEventListener('scroll',()=>{
+  const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;
+  hd.classList.toggle('solid',y>40);
+  prog.style.width=(y/h*100)+'%';
+  rider.style.transform=`translateY(${-(y/h)*(innerHeight-160)}px)`;
+  rider.classList.add('go');clearTimeout(tm);tm=setTimeout(()=>rider.classList.remove('go'),180);
+},{passive:true});
+
+/* 進場動畫 + 導覽高亮 */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const links=[...document.querySelectorAll('#nav a')];
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
+so.observe(document.getElementById('visit'));
+
+
+/* 服務分頁 */
+const panels=[...document.querySelectorAll('.svc')],tabs=[...document.querySelectorAll('.sc[data-tab]')];
+function openTab(id,scroll){
+  if(!document.getElementById(id)||!panels.some(p=>p.id===id))return false;
+  panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  tabs.forEach(t=>t.classList.toggle('on',t.dataset.tab===id));
+  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+  if(scroll)try{history.replaceState(null,'','#'+id)}catch(e){}
+  if(scroll)document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  return true;
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');if(!a)return;
+  const id=a.getAttribute('href').slice(1);
+  if(openTab(id,true))e.preventDefault();
+});
+openTab((location.hash||'').slice(1)||'maintain',false);
+if(location.hash&&panels.some(p=>'#'+p.id===location.hash))setTimeout(()=>openTab(location.hash.slice(1),true),2300);
+
+
+/* 救援：LINE 預填 + 費用試算（費率同「道路救援」頁：2 公里內 $500，超過每公里 +$50） */
+document.getElementById('rescueLine').href='https://line.me/R/oaMessage/'+encodeURIComponent('@f22048272')+'/?'+encodeURIComponent('【道路救援】\n車牌號碼：\n停放地點：\n車輛狀況：\n（四周照片會一起傳）');
+(function(){
+  const km=$('#rkm'),rg=$('#rrange'),amt=$('#ramt'),calc=$('#rcalc'),hint=$('#rhint');
+  const H={shop:'載回旭馳維修：以拋錨地點到旭馳的「單程」里程計算。',other:'從別處載到別處：以這一趟的「總里程」計算。'};
+  function render(v,from){
+    const d=Math.max(0,Math.min(60,Number(v)||0));
+    if(from!=='km')km.value=d; if(from!=='range')rg.value=Math.min(d,30);
+    hint.textContent=H[document.querySelector('input[name=rmode]:checked').value];
+    const extra=d>2?Math.ceil(d-2):0;
+    amt.textContent='$'+(500+extra*50).toLocaleString('zh-TW');
+    calc.textContent=extra?`基本 $500 ＋ 超過 ${extra} 公里 × $50`:'2 公里內，基本 $500';
+  }
+  km.addEventListener('input',()=>render(km.value,'km'));rg.addEventListener('input',()=>render(rg.value,'range'));
+  $('#rminus').onclick=()=>render(Number(km.value)-1);$('#rplus').onclick=()=>render(Number(km.value)+1);
+  document.querySelectorAll('input[name=rmode]').forEach(r=>r.addEventListener('change',()=>render(km.value)));
+  render(km.value);
+})();
+
+/* 最新消息 / 更多服務：讀「旭馳最新資訊」後台（在試算表改，官網自動更新） */
+const API='https://script.google.com/macros/s/AKfycbwdTz4DcFqcX9n-b8AlSZghw6jCG6NgjjH7PYlfXVHTIzUQrxt6yVziCPfnm9GiYbYwJg/exec';
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const safeUrl=u=>/^https?:\/\//.test(u)?u:'#';
+async function getApi(q){const c=new AbortController();setTimeout(()=>c.abort(),8000);const r=await fetch(API+'?api='+q,{signal:c.signal});return r.json()}
+getApi('posts').then(d=>{
+  const ps=(d&&d.posts||[]).slice(0,6);if(!ps.length)return;
+  $('#newsList').innerHTML=ps.map(p=>{const [,m,dd]=String(p.date).split('-');
+    return `<article class="ncard reveal"><div class="pic">${p.image?`<img src="${esc(safeUrl(p.image))}" alt="" loading="lazy" onerror="this.remove()">`:''}<span class="badge">${+m}/${+dd}</span></div><div class="t"><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p></div></article>`}).join('');
+  $('#news').hidden=false;document.querySelectorAll('#newsList .reveal').forEach(el=>io.observe(el));
+}).catch(()=>{});
+const FIXED=[
+  {group:'會員專區',name:'我的愛車',desc:'查詢維修保養紀錄',url:'https://service.xuchi-moto.com/mycar/'},
+  {group:'常見問題',name:'老闆，這台車…',desc:'騎車、保養常見問題',url:'https://service.xuchi-moto.com/qa/'},
+  {group:'新車',name:'新車價格查詢',desc:'SYM 新車牌價、分期試算',url:'https://bike.xuchi-moto.com/price.html'}
+];
+function drawLinks(extra){
+  const all=FIXED.concat(extra),officials=all.filter(l=>l.group==='原廠官網'),others=all.filter(l=>l.group!=='原廠官網');
+  let i=0;const item=l=>`<a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener" style="--i:${i++}"><b>${esc(l.name)}</b><em>${esc(l.desc)}</em></a>`;
+  const grp=(en,zh,list)=>list.length?`<div class="mgrp"><div class="mtitle"><span>${zh}</span></div>${list.map(item).join('')}</div>`:'';
+  $('#moreLinks').innerHTML=grp('','更多服務',others)+grp('','新車官網連結',officials);
+}
+drawLinks([]);
+getApi('links').then(d=>{const ls=(d&&d.links||[]).sort((a,b)=>(a.order||0)-(b.order||0));if(ls.length)drawLinks(ls)}).catch(()=>{});
+
+
+/* 側邊選單（三條線） */
+(function(){
+  const d=$('#drawer'),v=$('#veil'),b=$('#menuBtn');
+  function set(on){d.classList.toggle('on',on);v.classList.toggle('on',on);b.setAttribute('aria-expanded',on);d.setAttribute('aria-hidden',!on);document.body.classList.toggle('lock',on)}
+  b.onclick=()=>set(!d.classList.contains('on'));$('#menuClose').onclick=()=>set(false);v.onclick=()=>set(false);
+  addEventListener('keydown',e=>{if(e.key==='Escape')set(false)});
+  d.addEventListener('click',e=>{if(e.target.closest('a'))set(false)});
+})();
+
+/* 影片框 */
+function embed(url){
+  let m;
+  if((m=url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)))return `<iframe src="https://www.youtube.com/embed/${m[1]}?rel=0" allow="accelerometer;autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+  if(/facebook\.com|fb\.watch/.test(url))return `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false" allowfullscreen allow="autoplay;encrypted-media"></iframe>`;
+  if(/instagram\.com/.test(url))return `<iframe src="${url.replace(/\/?(\?.*)?$/,'/')}embed" allowfullscreen></iframe>`;
+  if(/\.(mp4|webm)(\?|$)/i.test(url))return `<video src="${url}" controls playsinline></video>`;
+  return `<iframe src="${url}" allowfullscreen></iframe>`;
+}
+function showVideo(i){
+  const v=CONFIG.videos[i];
+  $('#vframe').innerHTML=v?embed(v.url):'<div class="empty"><div><div class="play"></div><b>影片預留位置</b><br><small>把影片網址貼到網頁設定區 CONFIG.videos 就會出現在這裡</small></div></div>';
+  document.querySelectorAll('#vlist button').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+$('#vlist').innerHTML=CONFIG.videos.length>1?CONFIG.videos.map((v,i)=>`<button onclick="showVideo(${i})">${v.title||'影片 '+(i+1)}</button>`).join(''):'';
+showVideo(0);
+
+/* 改裝 */
+$('#mods').innerHTML=CONFIG.mods.map(m=>`<div class="mod"><div class="ph">${m.img?`<img src="${m.img}" alt="${m.name}" loading="lazy">`:'📷 施工照片'}</div><div class="b"><b>${m.name}</b><span>${m.price}</span></div></div>`).join('');
+$('#modtbl').innerHTML='<tr><th>品項</th><th>效果</th><th>價位</th></tr>'+CONFIG.modTable.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="pr">${r[2]}</td></tr>`).join('');
+
+/* 店面資訊與地圖 */
+const S=CONFIG.shop;
+$('#i-addr').textContent=S.address;$('#i-hours').textContent=S.hours;
+$('#i-tel').textContent=S.phone;$('#i-tel').href='tel:'+S.phone.replace(/-/g,'');
+$('#i-line').textContent=S.line;$('#i-line').href=S.lineUrl;
+$('#gmap').src=S.mapEmbed||('https://www.google.com/maps?q='+encodeURIComponent(S.mapQuery)+'&hl=zh-TW&z=17&output=embed');
+$('#i-nav').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(S.mapQuery);
+</script>
 </body>
 </html>
