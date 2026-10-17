@@ -307,7 +307,7 @@ body.lock{overflow:hidden}
 .mtabs a{flex:1;text-align:center;padding:9px 0;border:1px solid var(--line);font-weight:900;font-size:14px;color:var(--dim)}
 .mtabs a.on{background:var(--org);border-color:var(--org);color:#111}
 @media(max-width:560px){.mtabs{display:flex}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -647,7 +647,13 @@ document.getElementById('rescueLine').href='https://line.me/R/oaMessage/'+encode
 const API='https://script.google.com/macros/s/AKfycbwdTz4DcFqcX9n-b8AlSZghw6jCG6NgjjH7PYlfXVHTIzUQrxt6yVziCPfnm9GiYbYwJg/exec';
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const safeUrl=u=>/^https?:\/\//.test(u)?u:'#';
-async function getApi(q){const c=new AbortController();setTimeout(()=>c.abort(),8000);const r=await fetch(API+'?api='+q,{signal:c.signal});return r.json()}
+async function getApi(q){
+  for(let t=0;t<2;t++){
+    try{const c=new AbortController(),to=setTimeout(()=>c.abort(),15000);const r=await fetch(API+'?api='+q,{signal:c.signal});clearTimeout(to);const d=await r.json();try{localStorage.setItem('xc_'+q,JSON.stringify(d))}catch(e){}return d}catch(e){}
+  }
+  try{const c=localStorage.getItem('xc_'+q);if(c)return JSON.parse(c)}catch(e){}
+  throw new Error('api');
+}
 getApi('posts').then(d=>{
   const ps=(d&&d.posts||[]).slice(0,6);if(!ps.length)return;
   $('#newsList').innerHTML=ps.map(p=>{const [,m,dd]=String(p.date).split('-');
