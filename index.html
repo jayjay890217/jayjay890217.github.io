@@ -174,7 +174,6 @@ footer img{width:70px;margin:0 auto 8px}
 }
 @media(max-width:560px){
   section{padding:60px 0}
-  nav{display:none}
   .mods{grid-template-columns:1fr}
   #rider{width:54px}
 }
@@ -328,6 +327,17 @@ body.lock{overflow:hidden}
 .varrow:hover{background:var(--org);color:#111}
 .varrow.l{left:-64px}.varrow.r{right:-64px}
 @media(max-width:620px){.varrow{width:36px;height:60px;font-size:30px}.varrow.l{left:2px}.varrow.r{right:2px}}
+
+#home[hidden],#services[hidden]{display:none}
+#services{padding-top:110px;min-height:70vh}
+@media(max-width:560px){
+  header .in{flex-wrap:wrap;row-gap:0}
+  nav{display:flex;order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:8px;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav a{flex:none;white-space:nowrap}
+  #services{padding-top:150px}
+  .hero{padding-top:80px}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -343,9 +353,9 @@ body.lock{overflow:hidden}
 </div></div>
 
 <header id="hd"><div class="in">
-  <a class="brand" href="#top"><img src="img/logo.png" alt=""><span><b>旭馳</b>車業</span></a>
+  <a class="brand" href="#home"><img src="img/logo.png" alt=""><span><b>旭馳</b>車業</span></a>
   <nav id="nav">
-    <a href="#maintain">保養</a><a href="#repair">維修</a><a href="#mod">改裝</a><a href="#rescue">救援</a><a href="#newbike">新車</a><a href="#visit">交通</a>
+    <a href="#home">首頁</a><a href="#maintain">保養</a><a href="#repair">維修</a><a href="#mod">改裝</a><a href="#rescue">救援</a><a href="#newbike">新車</a><a href="#visit">交通</a>
   </nav>
   <button id="menuBtn" aria-label="開啟選單" aria-expanded="false" aria-controls="drawer"><i></i><i></i><i></i></button>
 </div></header>
@@ -361,6 +371,7 @@ body.lock{overflow:hidden}
 </aside>
 
 <main id="top">
+<div id="home">
 <!-- 首屏:一張照片 + 一句話 -->
 <div class="hero">
   <div class="bg"></div>
@@ -383,8 +394,20 @@ body.lock{overflow:hidden}
   <div class="newswrap"><button class="narrow l" id="nPrev" aria-label="上一則">‹</button><div class="news" id="newsList"></div><button class="narrow r" id="nNext" aria-label="下一則">›</button><div class="ndots" id="nDots"></div></div>
 </div></section>
 
-<div id="services">
-<div class="mtabs" id="mtabs"><a href="#maintain" data-tab="maintain">保養</a><a href="#repair" data-tab="repair">維修</a><a href="#mod" data-tab="mod">改裝</a><a href="#rescue" data-tab="rescue">救援</a><a href="#newbike" data-tab="newbike">新車</a></div>
+<!-- 影片框 -->
+<section class="video" id="video"><div class="wrap">
+  <div class="eyebrow bebas reveal center">WATCH</div>
+  <h2 class="title arrow center reveal">旭馳<b>實拍影片</b></h2>
+  <div class="vwrap reveal" id="vwrap">
+    <button class="varrow l" id="vPrev" aria-label="上一支影片" hidden>‹</button>
+    <div class="vframe" id="vframe"></div>
+    <button class="varrow r" id="vNext" aria-label="下一支影片" hidden>›</button>
+  </div>
+</div></section>
+
+</div><!-- /home -->
+
+<div id="services" hidden>
 <!-- 01 保養 -->
 <section class="svc" id="maintain"><div class="wrap">
   <div class="svhead reveal" data-en="MAINTENANCE"><div class="big">01</div><div><div class="eyebrow bebas">MAINTENANCE</div><h2 class="title">保<b>養</b></h2></div></div>
@@ -530,17 +553,6 @@ body.lock{overflow:hidden}
 
 </div>
 <!-- 地圖與店面資訊 -->
-<!-- 影片框(地圖上方) -->
-<section class="video" id="video" style="padding-top:70px"><div class="wrap">
-  <div class="eyebrow bebas reveal center">WATCH</div>
-  <h2 class="title arrow center reveal">旭馳<b>實拍影片</b></h2>
-  <div class="vwrap reveal" id="vwrap">
-    <button class="varrow l" id="vPrev" aria-label="上一支影片" hidden>‹</button>
-    <div class="vframe" id="vframe"></div>
-    <button class="varrow r" id="vNext" aria-label="下一支影片" hidden>›</button>
-  </div>
-</div></section>
-
 <section class="info" id="visit"><div class="wrap">
   <div class="eyebrow bebas reveal center">VISIT US</div>
   <h2 class="title arrow center reveal">歡迎<b>來店</b></h2>
@@ -627,18 +639,19 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 const links=[...document.querySelectorAll('#nav a')];
 const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-45% 0px -50% 0px'});
-so.observe(document.getElementById('visit'));
 
 
-/* 服務分頁 */
-const panels=[...document.querySelectorAll('.svc')],tabs=[...document.querySelectorAll('[data-tab]')];
+/* 分頁：首頁(公告欄+影片) / 保養 / 維修 / 改裝 / 救援 / 新車 */
+const panels=[...document.querySelectorAll('.svc')];
+window.curPage='home';
 function openTab(id,scroll){
-  if(!document.getElementById(id)||!panels.some(p=>p.id===id))return false;
+  const home=id==='home';
+  if(!home&&!panels.some(p=>p.id===id))return false;
+  $('#home').hidden=!home;$('#services').hidden=home;
   panels.forEach(p=>p.classList.toggle('active',p.id===id));
-  tabs.forEach(t=>t.classList.toggle('on',t.dataset.tab===id));
   links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
-  if(scroll)try{history.replaceState(null,'','#'+id)}catch(e){}
-  if(scroll)document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  window.curPage=id;document.dispatchEvent(new CustomEvent('pagechange',{detail:id}));
+  if(scroll){try{history.replaceState(null,'','#'+id)}catch(e){}scrollTo({top:0,behavior:'smooth'})}
   return true;
 }
 document.addEventListener('click',e=>{
@@ -646,9 +659,8 @@ document.addEventListener('click',e=>{
   const id=a.getAttribute('href').slice(1);
   if(openTab(id,true))e.preventDefault();
 });
-openTab((location.hash||'').slice(1)||'maintain',false);
-if(location.hash&&panels.some(p=>'#'+p.id===location.hash))setTimeout(()=>openTab(location.hash.slice(1),true),2300);
-
+openTab((location.hash||'').slice(1)||'home',false);
+if(!(location.hash||'').slice(1)||!document.getElementById((location.hash||'').slice(1)))openTab('home',false);
 
 /* 救援：LINE 預填 + 費用試算（費率同「道路救援」頁：2 公里內 $500，超過每公里 +$50） */
 document.getElementById('rescueLine').href='https://line.me/R/oaMessage/'+encodeURIComponent('@f22048272')+'/?'+encodeURIComponent('【道路救援】\n車牌號碼：\n停放地點：\n車輛狀況：\n（四周照片會一起傳）');
@@ -735,6 +747,8 @@ function showVideo(i){
 let cur=0;
 if(CONFIG.videos.length>1){const n=CONFIG.videos.length;$('#vPrev').hidden=$('#vNext').hidden=false;$('#vPrev').onclick=()=>showVideo((cur-1+n)%n);$('#vNext').onclick=()=>showVideo((cur+1)%n)}
 showVideo(0);
+document.addEventListener('pagechange',e=>{if(e.detail==='home')showVideo(cur);else $('#vframe').innerHTML=''});
+if(window.curPage!=='home')$('#vframe').innerHTML='';
 
 /* 改裝 */
 $('#mods').innerHTML=CONFIG.mods.map(m=>`<div class="mod"><div class="ph">${m.img?`<img src="${m.img}" alt="${m.name}" loading="lazy">`:'📷 施工照片'}</div><div class="b"><b>${m.name}</b><span>${m.price}</span></div></div>`).join('');
