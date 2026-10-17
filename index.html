@@ -318,6 +318,16 @@ body.lock{overflow:hidden}
 .ndots button{width:26px;height:3px;border:0;background:#3a3a3a;cursor:pointer;padding:0;transition:.3s}
 .ndots button.on{background:var(--org);width:40px}
 @media(max-width:560px){.news .ncard{grid-template-columns:38% 1fr;min-height:150px}.news .ncard .pic{min-height:150px}.news .ncard .t{padding:12px 14px}.news .ncard h3{font-size:16px;margin-bottom:4px}.news .ncard p{font-size:12.5px}}
+
+.vwrap{position:relative;margin-top:22px}
+.vwrap.vert{max-width:420px;margin-left:auto;margin-right:auto}
+.vwrap .vframe{margin-top:0}
+.vwrap .vframe.vert{max-width:none;margin:0}
+.varrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:70px;z-index:6;background:rgba(10,10,10,.82);border:1px solid var(--org);color:var(--org);font:300 38px/1 sans-serif;cursor:pointer;transition:.2s}
+.varrow[hidden]{display:none}
+.varrow:hover{background:var(--org);color:#111}
+.varrow.l{left:-64px}.varrow.r{right:-64px}
+@media(max-width:620px){.varrow{width:36px;height:60px;font-size:30px}.varrow.l{left:2px}.varrow.r{right:2px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.hero .txt>*,#drawer .mmore a,#splash img,#splash .t{opacity:1;transform:none}}
 </style>
 </head>
@@ -524,8 +534,11 @@ body.lock{overflow:hidden}
 <section class="video" id="video" style="padding-top:70px"><div class="wrap">
   <div class="eyebrow bebas reveal center">WATCH</div>
   <h2 class="title arrow center reveal">旭馳<b>實拍影片</b></h2>
-  <div class="vframe reveal" id="vframe"></div>
-  <div class="vlist reveal" id="vlist"></div>
+  <div class="vwrap reveal" id="vwrap">
+    <button class="varrow l" id="vPrev" aria-label="上一支影片" hidden>‹</button>
+    <div class="vframe" id="vframe"></div>
+    <button class="varrow r" id="vNext" aria-label="下一支影片" hidden>›</button>
+  </div>
 </div></section>
 
 <section class="info" id="visit"><div class="wrap">
@@ -716,11 +729,11 @@ function embed(url){
 }
 function showVideo(i){
   const v=CONFIG.videos[i];
-  $('#vframe').classList.toggle('vert',!!(v&&/instagram\.com/.test(v.url)));
+  const vert=!!(v&&/instagram\.com/.test(v.url));$('#vframe').classList.toggle('vert',vert);$('#vwrap').classList.toggle('vert',vert);cur=i;
   $('#vframe').innerHTML=v?embed(v.url):'<div class="empty"><div><div class="play"></div><b>影片預留位置</b><br><small>把影片網址貼到網頁設定區 CONFIG.videos 就會出現在這裡</small></div></div>';
-  document.querySelectorAll('#vlist button').forEach((b,j)=>b.classList.toggle('on',j===i));
 }
-$('#vlist').innerHTML=CONFIG.videos.length>1?CONFIG.videos.map((v,i)=>`<button onclick="showVideo(${i})">${v.title||'影片 '+(i+1)}</button>`).join(''):'';
+let cur=0;
+if(CONFIG.videos.length>1){const n=CONFIG.videos.length;$('#vPrev').hidden=$('#vNext').hidden=false;$('#vPrev').onclick=()=>showVideo((cur-1+n)%n);$('#vNext').onclick=()=>showVideo((cur+1)%n)}
 showVideo(0);
 
 /* 改裝 */
