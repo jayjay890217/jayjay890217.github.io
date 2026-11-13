@@ -112,6 +112,15 @@ table.v tr.all input{border-color:#f5c9a3}
 .ord .ft .tot{font-weight:900;color:var(--org-d);margin-right:auto}
 .ord .log{white-space:pre-line;font-size:12px;color:var(--dim);margin-top:6px}
 
+/* 設定：首頁文字、頁首選單 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.fl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--dim)}
+.fl input,.mrow input:not([type=checkbox]),.mrow select,.mrow textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--txt);font-size:14px}
+.mrow{border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;display:flex;flex-direction:column;gap:8px;background:#fcfbf9}
+.mtop{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mtop select{width:auto}
+.mtop .btn:disabled{opacity:.35;cursor:default}
 table.t{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
 table.t th,table.t td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
 table.t th{background:#faf8f5;font-size:13px;color:var(--dim)}
@@ -181,6 +190,25 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
     </section>
 
     <section id="t-set" class="hidden">
+      <div class="card">
+        <h3 style="font-size:16px">首頁文字</h3>
+        <p class="mut">店家一進「部品列表」最上面看到的標題和說明，以及網頁最頂端那條公告。</p>
+        <div class="grid2" style="margin-top:10px">
+          <label class="fl">大標題<input id="stTitle" maxlength="40"></label>
+          <label class="fl">公告條（最上面一行小字）<input id="stNotice" maxlength="80"></label>
+          <label class="fl" style="grid-column:1/-1">說明文字<input id="stSub" maxlength="200"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px">頁首選單</h3>
+        <p class="mut">「部品列表」固定在最前面，後面這幾個可以自己新增、改名、排順序、開關（最多 12 個）。<br>
+          「站內頁面」＝點了顯示你寫的文字（網址會自動變連結；一行只放圖片網址會直接顯示圖片）；「外部連結」＝點了開另一個網站（例如官網、IG、LINE）。</p>
+        <div id="menuL" style="margin-top:10px"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g s" id="menuAdd">＋ 新增選單</button>
+          <a class="btn g s" href="/shop/" target="_blank">↗ 看店家頁面</a>
+          <button class="btn" id="menuSave" style="margin-left:auto">儲存首頁文字和選單</button></div>
+        <div class="msg" id="mMenu"></div>
+      </div>
       <div class="card">
         <h3 style="font-size:16px">取貨方式</h3>
         <p class="mut">店家結帳時可以選的方式。關掉的店家看不到；有填條件的，沒達到時店家選不了（會顯示還差多少）。</p>
@@ -625,7 +653,62 @@ let SHIP = [];
 function renderSet() {
   $('#sNotify').innerHTML = '<option value="">（不通知）</option>' + D.groups.map(g => `<option value="${esc(g.id)}" ${g.id === D.notifyGroup ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
   SHIP = JSON.parse(JSON.stringify(D.ship)); drawShip();
+  const st = D.site || {};
+  $('#stTitle').value = st.title || ''; $('#stSub').value = st.sub || ''; $('#stNotice').value = st.notice || '';
+  MENU = JSON.parse(JSON.stringify(D.menu || [])); drawMenu();
 }
+
+// ----- 頁首選單 -----
+let MENU = [];
+function readMenu() {
+  return [...$('#menuL').querySelectorAll('.mrow')].map(r => {
+    const g = k => r.querySelector(`[data-k="${k}"]`);
+    return { id: r.dataset.id, name: g('name').value, on: g('on').checked, type: g('type').value, url: g('url').value, body: g('body').value };
+  });
+}
+function drawMenu() {
+  $('#menuL').innerHTML = MENU.length ? MENU.map((m, i) => `
+    <div class="mrow" data-id="${esc(m.id || '')}">
+      <div class="mtop">
+        <label class="sw"><input type="checkbox" data-k="on" ${m.on !== false ? 'checked' : ''}></label>
+        <input data-k="name" value="${esc(m.name || '')}" placeholder="選單名稱（例如：常見問題）" maxlength="12" style="flex:1;min-width:120px">
+        <select data-k="type"><option value="page" ${m.type !== 'link' ? 'selected' : ''}>站內頁面</option><option value="link" ${m.type === 'link' ? 'selected' : ''}>外部連結</option></select>
+        <button class="btn g s" data-mv="${i},-1" ${i ? '' : 'disabled'} title="往前">◀</button>
+        <button class="btn g s" data-mv="${i},1" ${i < MENU.length - 1 ? '' : 'disabled'} title="往後">▶</button>
+        <button class="btn g s" data-del="${i}">✕</button>
+      </div>
+      <input data-k="url" value="${esc(m.url || '')}" placeholder="https://…" class="${m.type === 'link' ? '' : 'hidden'}">
+      <textarea data-k="body" rows="5" placeholder="這一頁要顯示的內容" class="${m.type === 'link' ? 'hidden' : ''}">${esc(m.body || '')}</textarea>
+    </div>`).join('') : '<p class="mut">目前只有「部品列表」。</p>';
+  const L = $('#menuL');
+  L.querySelectorAll('[data-k="type"]').forEach(s => s.onchange = () => { MENU = readMenu(); drawMenu(); });
+  L.querySelectorAll('[data-mv]').forEach(b => b.onclick = () => {
+    const [i, d] = b.dataset.mv.split(',').map(Number); MENU = readMenu();
+    const x = MENU.splice(i, 1)[0]; MENU.splice(i + d, 0, x); drawMenu();
+  });
+  L.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    MENU = readMenu(); const m = MENU[+b.dataset.del];
+    if (m.name && !await ask('刪除「' + m.name + '」？', '按下方「儲存」後才會真的從店家頁面拿掉。', '刪除', '留著')) return;
+    MENU.splice(+b.dataset.del, 1); drawMenu();
+  });
+}
+$('#menuAdd').onclick = () => {
+  MENU = readMenu();
+  if (MENU.length >= 12) return msg($('#mMenu'), '最多 12 個');
+  MENU.push({ name: '', on: true, type: 'page', url: '', body: '' }); drawMenu();
+  const rows = $('#menuL').querySelectorAll('.mrow'); rows[rows.length - 1].querySelector('[data-k="name"]').focus();
+};
+$('#menuSave').onclick = async () => {
+  const b = $('#menuSave'); b.disabled = true;
+  try {
+    const list = readMenu();
+    const bad = list.find(x => x.name.trim() && x.type === 'link' && !/^https?:\/\//i.test(x.url.trim()));
+    if (bad) throw new Error('「' + bad.name + '」是外部連結，請填 https:// 開頭的網址');
+    const j = await call('admin-settings', { menu: list, site: { title: $('#stTitle').value, sub: $('#stSub').value, notice: $('#stNotice').value } });
+    D.menu = j.menu; D.site = j.site; renderSet(); msg($('#mMenu'), '已儲存，店家重新整理頁面就會看到', true);
+  } catch (e) { msg($('#mMenu'), e.message); }
+  b.disabled = false;
+};
 function readShip() {
   return [...$('#shipT').querySelectorAll('tr[data-i]')].map(tr => {
     const g = k => tr.querySelector(`[data-k="${k}"]`);
