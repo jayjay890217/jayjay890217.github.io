@@ -365,6 +365,10 @@ nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
 @media(max-width:560px){nav a{padding:7px 16px}nav a b{font-size:20px}}
 
 #menuBtn{margin-left:auto}
+.shopBtn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--org);border-radius:999px;color:var(--org);font-size:14px;letter-spacing:.08em;text-decoration:none;white-space:nowrap;transition:background .2s,color .2s}
+.shopBtn:hover{background:var(--org);color:#000}
+.shopBtn+#menuBtn{margin-left:10px}
+@media(max-width:560px){.shopBtn{padding:6px 11px;font-size:13px}}
 .mmore a.on b{color:var(--org)}
 .mmore a.on b::before{content:"▸ ";color:var(--org)}
 @media(max-width:560px){#services{padding-top:110px}.hero{padding-top:34px}}
@@ -384,6 +388,7 @@ nav a:hover span,nav a.on span{max-width:5em;opacity:1;margin-left:8px}
 
 <header id="hd"><div class="in">
   <a class="brand" href="#home"><img src="img/logo.png?v=2" alt=""><span><b>旭馳</b>車業</span></a>
+  <a class="shopBtn" href="/shop/#/login">店家登入</a>
   <button id="menuBtn" aria-label="開啟選單" aria-expanded="false" aria-controls="drawer"><i></i><i></i><i></i></button>
 </div></header>
 

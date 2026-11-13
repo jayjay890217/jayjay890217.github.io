@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>旭馳合作店家叫貨</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{--bg:#0a0a0a;--bg2:#111214;--panel:#17181b;--panel2:#202226;--line:#2a2c31;--org:#ff7a00;--org2:#ffb000;--txt:#f4efe8;--dim:#9a948b;--ok:#4cc38a;--bad:#ff5a4f}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font:15px/1.65 "Noto Sans TC","Microsoft JhengHei",sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font:inherit;color:inherit}
+img{display:block;max-width:100%}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px;width:100%}
+.hidden{display:none!important}
+
+/* 公告條 */
+.notice{position:relative;background:#26272b;color:#ddd;font-size:13px;text-align:center;padding:6px 16px;overflow:hidden}
+.notice::before{content:"";position:absolute;left:-30px;top:0;bottom:0;width:230px;background:linear-gradient(115deg,transparent 0 22%,var(--org) 22% 46%,#fff 46% 58%,var(--org2) 58% 82%,transparent 82%);opacity:.95}
+.notice span{position:relative}
+@media(max-width:640px){.notice::before{width:110px}.notice{text-align:right}}
+
+/* 頁首 */
+header{position:sticky;top:0;z-index:30;background:rgba(10,10,10,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .in{display:flex;align-items:center;gap:28px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;flex:none}
+.logo img{width:40px}
+.logo b{font:900 19px/1 "Noto Sans TC",sans-serif;letter-spacing:.06em}
+.logo b i{font-style:normal;color:var(--org)}
+.logo small{display:block;font:11px "Bebas Neue",sans-serif;letter-spacing:.32em;color:var(--dim);margin-top:3px}
+nav.main{display:flex;gap:26px;font-weight:700;color:#cfc8bd}
+nav.main a{padding:6px 0;border-bottom:2px solid transparent;white-space:nowrap}
+nav.main a:hover,nav.main a.on{color:var(--txt);border-color:var(--org)}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.acct{position:relative;display:flex;align-items:center;gap:6px;color:#ddd;cursor:pointer;background:none;border:0;white-space:nowrap}
+.acct b{color:var(--org)}
+.acct svg{width:18px;height:18px;flex:none}
+.menu{position:absolute;right:0;top:calc(100% + 12px);background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:170px;padding:6px;display:none;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.menu.on{display:block}
+.menu a,.menu button{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:6px;background:none;border:0;cursor:pointer;color:#ddd}
+.menu a:hover,.menu button:hover{background:var(--panel2);color:var(--txt)}
+.cart-btn{position:relative;display:flex;color:#ddd}
+.cart-btn svg{width:24px;height:24px}
+.cart-btn em{position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--org);color:#111;font:700 11px/18px sans-serif;text-align:center;font-style:normal}
+.subnav{display:none}
+@media(max-width:820px){
+  header .in{gap:12px;height:58px}
+  nav.main{display:none}
+  .subnav{display:flex;gap:8px;overflow-x:auto;padding:8px 20px;border-top:1px solid var(--line);scrollbar-width:none}
+  .subnav a{flex:none;padding:4px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:#ccc}
+  .subnav a.on{background:var(--org);border-color:var(--org);color:#111;font-weight:700}
+  .acct .nm{max-width:110px;overflow:hidden;text-overflow:ellipsis}
+  .acct .hi{display:none}
+}
+
+main{flex:1}
+.page-h{border-bottom:1px solid var(--line);padding:34px 0 30px}
+.page-h h1{font-size:24px;font-weight:900}
+.page-h p{color:var(--dim);margin-top:4px}
+
+/* 首頁橫幅 */
+.hero{position:relative;height:clamp(240px,42vw,520px);overflow:hidden;background:#000}
+.hero img{width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero .t{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,6vw,90px)}
+.hero .t small{font:clamp(14px,1.6vw,20px) "Bebas Neue",sans-serif;letter-spacing:.4em;color:var(--org)}
+.hero .t h2{font-size:clamp(28px,5vw,60px);font-weight:900;line-height:1.15;margin:6px 0 10px;text-shadow:0 4px 30px rgba(0,0,0,.7)}
+.hero .t p{color:#ddd;max-width:520px}
+.hero .t .cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.band{background:var(--org);color:#111;text-align:center;font-weight:700;padding:11px 16px}
+
+/* 商品牆 */
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:44px 0 18px}
+.sec-h h2{font-size:21px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 22px;padding-bottom:60px}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr);gap:20px 12px}}
+.card{display:block;cursor:pointer}
+.card .ph{position:relative;aspect-ratio:1;background:var(--panel);overflow:hidden;border-radius:4px}
+.card .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.card:hover .ph img{transform:scale(1.05)}
+.tag{display:inline-block;background:var(--org);color:#111;font-size:12px;font-weight:900;padding:3px 9px;border-radius:4px;line-height:1.4}
+.card .tag{position:absolute;left:10px;top:10px}
+.card h3{font-size:16px;font-weight:700;margin-top:12px;line-height:1.4}
+.card .sb{color:var(--dim);font-size:13px}
+.card .pr{margin-top:4px;font-weight:700}
+.card .pr .rt{color:var(--txt)}
+.card .pr .dl{display:block;color:var(--org);font-size:14px}
+.card .pr .lk{color:var(--dim);font-weight:400;font-size:13px}
+.dealer{color:var(--org);font-size:18px;font-weight:700;min-height:0}
+.dealer:empty{display:none}
+.noimg{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(circle at 50% 40%,#25262a,#121315 70%);color:#777;text-align:center;padding:14px}
+.noimg svg{width:42%;opacity:.5}
+.noimg b{font-size:14px;color:#aaa;line-height:1.3}
+
+/* 商品頁 */
+.pd{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:46px;padding:36px 0 30px}
+@media(max-width:860px){.pd{grid-template-columns:1fr;gap:22px;padding-top:16px}}
+.gal .main{aspect-ratio:1;background:var(--panel);border-radius:6px;overflow:hidden}
+.gal .main img{width:100%;height:100%;object-fit:contain;background:#000}
+.gal .thumbs{display:flex;gap:8px;margin-top:10px;overflow-x:auto}
+.gal .thumbs button{flex:none;width:72px;height:72px;border:2px solid transparent;border-radius:4px;overflow:hidden;background:var(--panel);cursor:pointer;padding:0}
+.gal .thumbs button.on{border-color:var(--org)}
+.gal .thumbs img{width:100%;height:100%;object-fit:cover}
+.info h1{font-size:24px;font-weight:900;line-height:1.35;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.info .sb{color:var(--dim);margin-top:4px;font-size:16px}
+.price-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 4px}
+.price-row .p{font-size:26px;font-weight:900;color:var(--org2)}
+.price-row .p.list{color:var(--txt)}
+.toggle-p{border:1px solid #5a5d66;color:#e8e2d8;background:#2a2d34;border-radius:6px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.toggle-p.on{background:rgba(255,122,0,.15);border-color:var(--org);color:var(--org)}
+.hint{color:var(--dim);font-size:14px}
+.opt-h{display:flex;align-items:center;gap:6px;font-weight:700;margin:24px 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opts button{min-width:62px;padding:9px 16px;border:1px solid #4a4c52;background:transparent;border-radius:4px;cursor:pointer;font-size:14px;color:#e8e2d8}
+.opts button:hover{border-color:#888}
+.opts button.on{border-color:var(--org);background:rgba(255,122,0,.12);color:var(--txt);box-shadow:inset 0 0 0 1px var(--org)}
+.opts button:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+.qty{display:inline-flex;align-items:center;border:1px solid #3a3c42;border-radius:6px;overflow:hidden;background:var(--bg2)}
+.qty button{width:46px;height:46px;border:0;background:transparent;font-size:20px;cursor:pointer;color:#bbb}
+.qty button:hover{color:var(--txt)}
+.qty input{width:64px;height:46px;border:0;background:transparent;text-align:center;font-weight:900;font-size:17px;outline:none}
+.qty.sm button{width:34px;height:34px;font-size:17px}.qty.sm input{width:44px;height:34px;font-size:15px}
+.buy{display:flex;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:6px;border:0;background:var(--org);color:#111;font-weight:900;font-size:16px;cursor:pointer;transition:filter .2s}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;border:1px solid #4a4c52;color:var(--txt);font-weight:700}
+.btn.wide{width:100%}
+.buy .btn{flex:1}
+.stock{font-size:13px;color:var(--dim);margin-left:10px}
+.desc{white-space:pre-line;color:#d6cfc4;margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:15px}
+.crumb{font-size:13px;color:var(--dim);padding-top:18px}
+.crumb a:hover{color:var(--txt)}
+
+/* 登入 */
+.auth{max-width:1100px;margin:40px auto 70px}
+.auth .tabs{display:flex}
+.auth .tabs button{width:220px;padding:14px;background:transparent;border:0;border-top:3px solid transparent;color:var(--dim);font-size:16px;cursor:pointer}
+.auth .tabs button.on{background:var(--panel);border-color:var(--org);color:var(--txt);font-weight:700}
+.auth .box{background:var(--panel);border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:44px 50px}
+@media(max-width:820px){.auth{margin:20px auto 50px}.auth .tabs button{flex:1;width:auto}.auth .box{grid-template-columns:1fr;gap:30px;padding:28px 20px}}
+.auth h3{font-size:19px;font-weight:900;margin-bottom:18px}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:13px;color:var(--dim);margin-bottom:4px}
+.fld label i{color:var(--org);font-style:normal}
+.fld input,.fld textarea,.fld select{width:100%;padding:12px 14px;border-radius:6px;border:1px solid transparent;background:#e9edf6;color:#111;font-size:15px;outline:none}
+.fld input:focus{border-color:var(--org)}
+.fld input:disabled{background:#c9ccd3}
+.dark-in .fld input,.dark-in .fld textarea{background:var(--bg2);color:var(--txt);border-color:var(--line)}
+.dark-in .fld input:disabled{background:#1a1b1e;color:var(--dim)}
+.row-b{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
+.row-b .btn{min-width:150px}
+.lnk{background:none;border:0;color:var(--dim);cursor:pointer;font-size:14px}
+.lnk:hover{color:var(--txt)}
+.lnk.o{color:var(--org)}
+#gbtn{display:flex;justify-content:center;min-height:48px}
+.gnote{color:var(--dim);font-size:13px;text-align:center;margin-top:8px}
+.msg{margin-top:12px;font-size:14px;padding:10px 12px;border-radius:6px;display:none}
+.msg.err{display:block;background:rgba(255,90,79,.12);color:#ff9d96;border:1px solid rgba(255,90,79,.35)}
+.msg.ok{display:block;background:rgba(76,195,138,.12);color:#8fe0b7;border:1px solid rgba(76,195,138,.35)}
+
+/* 購物車 */
+.cart{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:30px;padding:30px 0 70px}
+@media(max-width:900px){.cart{grid-template-columns:1fr}}
+.ci{display:grid;grid-template-columns:90px 1fr auto;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.ci .ph{width:90px;height:90px;border-radius:4px;overflow:hidden;background:var(--panel)}
+.ci .ph img{width:100%;height:100%;object-fit:cover}
+.ci h4{font-size:15px;font-weight:700}
+.ci .v{color:var(--dim);font-size:13px}
+.ci .u{color:var(--org2);font-weight:700;font-size:14px;margin-top:2px}
+.ci .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.ci .r b{font-size:16px}
+.ci .warn{color:var(--bad);font-size:13px}
+@media(max-width:560px){.ci{grid-template-columns:70px 1fr}.ci .ph{width:70px;height:70px}.ci .r{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center}}
+.sum{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px;align-self:start;position:sticky;top:90px}
+.sum h3{font-size:17px;margin-bottom:12px}
+.sum .l{display:flex;justify-content:space-between;padding:5px 0;color:#ddd}
+.sum .l.t{border-top:1px solid var(--line);margin-top:8px;padding-top:12px;font-size:19px;font-weight:900;color:var(--org2)}
+.ship{display:flex;flex-direction:column;gap:8px;margin:6px 0 14px}
+.ship label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.ship label.on{border-color:var(--org);background:rgba(255,122,0,.08)}
+.ship label.dis{opacity:.45;cursor:not-allowed}
+.ship input{margin-top:5px;accent-color:var(--org)}
+.ship small{display:block;color:var(--dim);font-size:12px}
+.empty{color:var(--dim);text-align:center;padding:70px 0}
+
+/* 紀錄 */
+.ord{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin:12px 0}
+.ord .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ord .no{font-weight:900}.ord .tm{color:var(--dim);font-size:13px}
+.chip{margin-left:auto;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line)}
+.chip.s0{color:var(--org2);border-color:rgba(255,176,0,.4)}.chip.s1{color:#7fb8ff;border-color:rgba(127,184,255,.4)}
+.chip.s2{color:var(--ok);border-color:rgba(76,195,138,.4)}.chip.s3{color:var(--dim)}
+.ord ul{list-style:none;margin:10px 0 6px;font-size:14px}
+.ord li{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.ord .ft{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;border-top:1px dashed var(--line);padding-top:8px;margin-top:6px;flex-wrap:wrap}
+.ord .ft b{color:var(--org2)}
+
+.narrow{max-width:760px}
+.cardbox{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:24px;margin:24px 0}
+.big{font-size:52px;line-height:1;margin-bottom:12px}
+
+/* 視窗、提示 */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.on{display:flex}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:100%;max-width:440px;padding:26px 22px;text-align:center}
+.modal h2{font-size:20px;margin-bottom:8px}
+.modal .row{display:flex;gap:10px;margin-top:20px}.modal .row .btn{flex:1}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:70;background:#fff;color:#111;padding:12px 18px;border-radius:8px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:.25s;display:flex;gap:14px;align-items:center;pointer-events:none;max-width:calc(100vw - 32px)}
+#toast.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+#toast a{color:var(--org);text-decoration:underline;white-space:nowrap}
+.spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--org);border-radius:50%;animation:sp 1s linear infinite;margin:90px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+footer{border-top:1px solid var(--line);margin-top:auto;padding:36px 0 40px;color:#bbb;font-size:14px}
+footer .in{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}
+footer b{color:var(--txt);font-size:17px}
+footer a:hover{color:var(--org)}
+</style>
+</head>
+<body>
+<div class="notice"><span>旭馳合作店家專用・下單後旭馳會立刻收到 LINE 通知</span></div>
+<header>
+  <div class="wrap in">
+    <a class="logo" href="#/"><img src="/img/logo.png?v=2" alt=""><span><b><i>旭馳</i>車業</b><small>PARTNER ORDER</small></span></a>
+    <nav class="main" id="nav"></nav>
+    <div class="hd-right">
+      <a class="acct" id="loginLink" href="#/login"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>店家登入／註冊</a>
+      <div class="acct hidden" id="acctBtn" role="button" tabindex="0"><span class="hi">歡迎光臨,</span><b class="nm" id="acctName"></b>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <div class="menu" id="acctMenu">
+          <a href="#/orders">📋 我的叫貨紀錄</a>
+          <a href="#/profile">⚙️ 店家資料</a>
+          <a href="#" id="logoutBtn">登出</a>
+        </div>
+      </div>
+      <a class="cart-btn" href="#/cart" aria-label="購物車"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7V6a5 5 0 0 1 10 0v1h3l-1 15H5L4 7h3Zm2 0h6V6a3 3 0 0 0-6 0v1Z"/></svg><em id="cartN" class="hidden">0</em></a>
+    </div>
+  </div>
+  <div class="subnav" id="subnav"></div>
+</header>
+
+<main id="app"><div class="spin"></div></main>
+
+<footer><div class="wrap in">
+  <div><b>旭馳車業</b><br>TEL：<a href="tel:0222048272">02-2204-8272</a><br>新北市新莊區豐年街55-10號<br>週日～週五 11:00–21:00（週六公休）</div>
+  <div><a href="/">旭馳官網</a><br><a href="#/orders">我的叫貨紀錄</a><br><a href="/shop/privacy.html">隱私權說明</a></div>
+</div></footer>
+
+<div class="modal" id="mdOk"><div class="box">
+  <div class="big">✅</div><h2>叫貨單已送出</h2><p class="hint" id="okTxt"></p>
+  <div class="row"><a class="btn ghost" href="#/orders" id="okHist">看叫貨紀錄</a><a class="btn" href="#/" id="okBack">繼續逛</a></div>
+</div></div>
+<div class="modal" id="mdAsk"><div class="box">
+  <h2 id="askT"></h2><p class="hint" id="askP"></p>
+  <div class="row"><button class="btn ghost" id="askNo">取消</button><button class="btn" id="askYes">確定</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+// ===== 設定 =====
+const API = 'https://script.google.com/macros/s/AKfycbwpuWgRT6DTAJ6asuGvv761kvXFvGyUtwbcA34rFTBJgHpTW7kxlqyagcM-IK5y2CCk/exec';
+const KEY = 'xuchi_shop_token';
+const PHOTO = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 800);
+const TIRE = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><circle cx="32" cy="32" r="28"/><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="4"/><path d="M32 4v10M32 50v10M4 32h10M50 32h10M12 12l7 7M45 45l7 7M12 52l7-7M45 19l7-7"/></svg>';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Number(n || 0).toLocaleString();
+const ls = {
+  get(k){ try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } },
+  set(k, v){ try{ v ? localStorage.setItem(k, v) : localStorage.removeItem(k); }catch(e){} },
+};
+
+let token = ls.get(KEY), me = null, products = [], ship = [], loaded = false, gReady = false, gCred = '', gInfo = null;
+// 平常只顯示末端售價（給客人看也沒關係）；按「顯示經銷價」才多顯示經銷價，這台裝置會記住
+let showDealer = ls.get('xuchi_shop_dealer') === '1';
+
+async function call(api, body) {
+  let r;
+  try {
+    r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ api, token }, body || {})) });
+  } catch (e) { throw new Error('網路不穩，請再試一次'); }
+  let j;
+  try { j = await r.json(); } catch (e) { throw new Error('系統忙碌中，請稍後再試'); }
+  if (!j.ok) {
+    if (j.code === 'LOGIN') { token = ''; ls.set(KEY, ''); setMe(null); }
+    throw new Error(j.error || '發生錯誤');
+  }
+  return j;
+}
+
+const approved = () => me && me.status === '核准';
+
+// ===== 購物車（存在這台裝置，依店家分開） =====
+const cartKey = () => 'xuchi_shop_cart_' + (me ? me.id : 'guest');
+function cart() { try { return JSON.parse(ls.get(cartKey()) || '[]'); } catch (e) { return []; } }
+function saveCart(c) { ls.set(cartKey(), c.length ? JSON.stringify(c) : ''); updCartN(); }
+function updCartN() { const n = cart().reduce((a, x) => a + x.qty, 0); $('#cartN').textContent = n; $('#cartN').classList.toggle('hidden', !n); }
+function findVar(vid) { for (const p of products) { const v = p.vars.find(x => x.id === vid); if (v) return { p, v }; } return null; }
+
+// ===== 頁首 =====
+function setMe(s) {
+  me = s;
+  $('#loginLink').classList.toggle('hidden', !!s);
+  $('#acctBtn').classList.toggle('hidden', !s);
+  if (s) $('#acctName').textContent = s.name;
+  updCartN();
+}
+$('#acctBtn').onclick = e => { e.stopPropagation(); $('#acctMenu').classList.toggle('on'); };
+document.addEventListener('click', () => $('#acctMenu').classList.remove('on'));
+$('#logoutBtn').onclick = async e => {
+  e.preventDefault();
+  if (!await ask('要登出嗎？', '購物車裡的東西會留在這台裝置，下次登入還在。')) return;
+  try { await call('logout'); } catch (err) {}
+  token = ''; ls.set(KEY, ''); setMe(null); loaded = false; location.hash = '#/'; route();
+};
+
+function cats() { return [...new Set(products.map(p => p.cat).filter(Boolean))]; }
+function renderNav() {
+  const cur = decodeURIComponent((location.hash.match(/^#\/c\/(.+)/) || [])[1] || '');
+  const h = location.hash || '#/';
+  const items = [['#/', '全部商品', h === '#/' || h === '#']].concat(cats().map(c => ['#/c/' + encodeURIComponent(c), c, cur === c]));
+  const html = items.map(([href, t, on]) => `<a href="${href}" class="${on ? 'on' : ''}">${esc(t)}</a>`).join('');
+  $('#nav').innerHTML = html; $('#subnav').innerHTML = html;
+}
+
+// ===== 資料 =====
+async function load() {
+  const j = await call('catalog');
+  products = j.products; ship = j.ship || []; loaded = true;
+  setMe(j.store);
+  saveCart(cart().filter(x => findVar(x.vid)));   // 已下架的從購物車拿掉
+}
+
+// ===== 路由 =====
+window.addEventListener('hashchange', route);
+async function route() {
+  $('#acctMenu').classList.remove('on');
+  const h = location.hash.replace(/^#/, '') || '/';
+  const app = $('#app');
+  if (!loaded) {
+    app.innerHTML = '<div class="spin"></div>';
+    try { await load(); } catch (e) { app.innerHTML = `<div class="wrap empty">${esc(e.message)}<br><br><button class="btn" onclick="route()">再試一次</button></div>`; return; }
+  }
+  renderNav();
+  window.scrollTo(0, 0);
+  let m;
+  if (h === '/') return pageHome();
+  if ((m = h.match(/^\/c\/(.+)/))) return pageHome(decodeURIComponent(m[1]));
+  if ((m = h.match(/^\/p\/(.+)/))) return pageProduct(decodeURIComponent(m[1]));
+  if (h === '/login') return pageAuth('login');
+  if (h === '/register') return pageAuth('reg');
+  if (h === '/cart') return pageCart();
+  if (h === '/orders') return need() && pageOrders();
+  if (h === '/profile') return need() && pageProfile();
+  pageHome();
+}
+function need() { if (!me) { location.hash = '#/login'; return false; } return true; }
+
+// ===== 首頁／分類 =====
+// 價格區間文字：nums 是一串價格
+function range(nums) {
+  nums = nums.filter(Boolean);
+  if (!nums.length) return '';
+  const lo = Math.min(...nums), hi = Math.max(...nums);
+  return money(lo) + (hi > lo ? ' - ' + money(hi) : '');
+}
+// 商品卡：平常顯示末端售價；按過「顯示經銷價」的話下面多一行經銷價
+function priceTxt(p) {
+  const retail = range(p.vars.map(v => v.list));
+  const dealer = approved() ? range(p.vars.map(v => v.price)) : '';
+  if (!retail) return dealer ? `<span class="dl">經銷價 ${dealer}</span>` : '<span class="lk">登入看經銷價</span>';
+  return `<span class="rt">${retail}</span>` + (dealer && showDealer ? `<span class="dl">經銷價 ${dealer}</span>` : '');
+}
+function cover(p, w) {
+  return p.photos && p.photos.length ? `<img src="${PHOTO(p.photos[0], w)}" alt="${esc(p.name)}" loading="lazy">`
+    : `<div class="noimg">${TIRE}<b>${esc(p.name)}</b></div>`;
+}
+function pageHome(cat) {
+  const list = cat ? products.filter(p => p.cat === cat) : products;
+  const hero = cat ? `<div class="page-h"><div class="wrap"><h1>${esc(cat)}</h1><p>${list.length} 項商品</p></div></div>` : `
+    <section class="hero"><img src="/img/hero.jpg" alt="">
+      <div class="t"><small>XUCHI PARTNER ORDER</small><h2>旭馳合作店家<br>線上叫貨</h2>
+        <p>選商品、挑規格、加入購物車，送出後旭馳立刻收到通知、安排出貨。</p>
+        <div class="cta">${me ? (approved() ? '<a class="btn" href="#/cart">查看購物車</a><a class="btn ghost" href="#/orders">我的叫貨紀錄</a>' : '<span class="tag">帳號審核中</span>')
+          : '<a class="btn" href="#/login">店家登入</a><a class="btn ghost" href="#/register">註冊店家帳號</a>'}</div></div></section>
+    ${me && !approved() ? `<div class="band">${me.status === '停用' ? '帳號目前停用中，有問題請聯絡旭馳 02-2204-8272' : '你的帳號還在審核中，旭馳開通後就能看到經銷價並下單'}</div>` : ''}`;
+  $('#app').innerHTML = hero + `<div class="wrap">
+    ${cat ? '<div style="height:30px"></div>' : '<div class="sec-h"><h2>所有商品</h2></div>'}
+    ${list.length ? `<div class="grid">${list.map(p => `
+      <a class="card" href="#/p/${encodeURIComponent(p.id)}">
+        <div class="ph">${cover(p, 600)}${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</div>
+        <h3>${esc(p.name)}</h3>${p.sub ? `<div class="sb">${esc(p.sub)}</div>` : ''}
+        <div class="pr">${priceTxt(p)}</div></a>`).join('')}</div>` : '<div class="empty">目前沒有商品</div>'}
+  </div>`;
+}
+
+// ===== 商品頁 =====
+function pageProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) { $('#app').innerHTML = '<div class="wrap empty">找不到這個商品（可能已下架）<br><br><a class="btn" href="#/">回商品列表</a></div>'; return; }
+  let sel = p.vars.length === 1 ? p.vars[0] : null, q = 1, img = 0;
+  const single = p.vars.length === 1 && !p.vars[0].name;
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="crumb"><a href="#/">全部商品</a>${p.cat ? ` / <a href="#/c/${encodeURIComponent(p.cat)}">${esc(p.cat)}</a>` : ''} / ${esc(p.name)}</div>
+    <div class="pd">
+      <div class="gal"><div class="main" id="gMain"></div><div class="thumbs" id="gThumbs"></div></div>
+      <div class="info">
+        <h1>${esc(p.name)}${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</h1>
+        ${p.sub ? `<div class="sb">${esc(p.sub)}</div>` : ''}
+        <div class="price-row"><span class="p" id="pP"></span>${approved() ? '<button class="toggle-p" id="pT">顯示經銷價</button>' : ''}</div>
+        <div class="dealer" id="pD"></div>
+        <div class="hint" id="pH"></div>
+        ${single ? '' : `<div class="opt-h">${esc(p.varName || '規格')}</div><div class="opts" id="pO">${p.vars.map(v =>
+          `<button data-v="${esc(v.id)}" ${v.stock === 0 ? 'disabled title="缺貨"' : ''}>${esc(v.name)}</button>`).join('')}</div>`}
+        <div class="opt-h">購買數量</div>
+        <div><span class="qty" id="pQty"><button data-d="-1" aria-label="減少">−</button><input id="pQ" type="number" inputmode="numeric" min="1" value="1" aria-label="數量"><button data-d="1" aria-label="增加">＋</button></span><span class="stock" id="pS"></span></div>
+        <div class="buy">${approved() ? '<button class="btn" id="pAdd">加入購物車</button>'
+          : me ? '<button class="btn" disabled>帳號審核中，開通後才能叫貨</button>'
+          : '<a class="btn" href="#/login">登入後叫貨</a>'}</div>
+        ${p.desc ? `<div class="desc">${esc(p.desc)}</div>` : ''}
+      </div>
+    </div></div>`;
+  const photos = p.photos || [];
+  const drawImg = () => {
+    $('#gMain').innerHTML = photos.length ? `<img src="${PHOTO(photos[img], 1400)}" alt="${esc(p.name)}">` : `<div class="noimg">${TIRE}<b>${esc(p.name)}</b></div>`;
+    $('#gThumbs').innerHTML = photos.length > 1 ? photos.map((f, i) => `<button class="${i === img ? 'on' : ''}" data-i="${i}"><img src="${PHOTO(f, 200)}" alt=""></button>`).join('') : '';
+    $('#gThumbs').querySelectorAll('button').forEach(b => b.onclick = () => { img = +b.dataset.i; drawImg(); });
+  };
+  const draw = () => {
+    const ok = approved();
+    const vs = sel ? [sel] : p.vars;
+    const retail = range(vs.map(v => v.list)), dealer = ok ? range(vs.map(v => v.price)) : '';
+    // 大字：末端售價（沒填售價就直接顯示經銷價）
+    $('#pP').textContent = retail || dealer || '—';
+    $('#pP').classList.toggle('list', !!retail);
+    if ($('#pT')) {
+      $('#pT').classList.toggle('hidden', !retail);
+      $('#pT').textContent = showDealer ? '顯示一般價' : '顯示經銷價';
+      $('#pT').classList.toggle('on', showDealer);
+    }
+    $('#pD').textContent = retail && dealer && showDealer ? '經銷價：' + dealer : '';
+    $('#pH').textContent = !ok ? (me ? '開通後就能看經銷價' : '這是末端售價，登入後可以看經銷價')
+      : showDealer && !sel && p.vars.length > 1 ? '請選擇完整規格以顯示經銷價' : '';
+    $('#pS').textContent = sel && sel.stock !== null ? (sel.stock > 0 ? '庫存 ' + sel.stock : '缺貨') : '';
+    if ($('#pO')) $('#pO').querySelectorAll('button').forEach(b => b.classList.toggle('on', !!sel && b.dataset.v === sel.id));
+    if ($('#pAdd')) $('#pAdd').disabled = !!sel && sel.stock === 0;
+  };
+  drawImg(); draw();
+  if ($('#pO')) $('#pO').querySelectorAll('button').forEach(b => b.onclick = () => { sel = p.vars.find(v => v.id === b.dataset.v); draw(); });
+  if ($('#pT')) $('#pT').onclick = () => { showDealer = !showDealer; ls.set('xuchi_shop_dealer', showDealer ? '1' : ''); draw(); };
+  const qi = $('#pQ');
+  const setQ = v => { q = Math.max(1, Math.min(500, Math.floor(Number(v) || 1))); qi.value = q; };
+  $('#pQty').querySelectorAll('button').forEach(b => b.onclick = () => setQ(q + Number(b.dataset.d)));
+  qi.onchange = () => setQ(qi.value);
+  if ($('#pAdd')) $('#pAdd').onclick = () => {
+    if (!sel) { toast('請先選擇' + (p.varName || '規格')); return; }
+    const c = cart(), it = c.find(x => x.vid === sel.id);
+    const want = (it ? it.qty : 0) + q;
+    if (sel.stock !== null && want > sel.stock) { toast('庫存只剩 ' + sel.stock); return; }
+    if (it) it.qty = want; else c.push({ vid: sel.id, qty: q });
+    saveCart(c);
+    toast(`已加入購物車：${p.name}${sel.name ? '｜' + sel.name : ''} ×${q}`, true);
+  };
+}
+
+// ===== 購物車 =====
+function shipState(x, amount, qty) {
+  if (x.minAmount && amount < x.minAmount) return '滿 ' + money(x.minAmount) + ' 才能選（還差 ' + money(x.minAmount - amount) + '）';
+  if (x.minQty && qty < x.minQty) return '滿 ' + x.minQty + ' 件才能選（還差 ' + (x.minQty - qty) + ' 件）';
+  return '';
+}
+const shipFee = (x, amount) => x.fee && !(x.freeOver && amount >= x.freeOver) ? x.fee : 0;
+let shipSel = '', cartNote = '', nonce = '';
+function pageCart() {
+  const head = '<div class="page-h"><div class="wrap"><h1>購物車</h1><p>確認數量和取貨方式，按「送出叫貨」旭馳就會收到。</p></div></div>';
+  if (!me) { $('#app').innerHTML = head + `<div class="wrap empty">登入店家帳號才能叫貨<br><br><a class="btn" href="#/login">店家登入</a></div>`; return; }
+  if (!approved()) { $('#app').innerHTML = head + `<div class="wrap empty">帳號還在審核中，開通後才能叫貨</div>`; return; }
+  const lines = cart().map(x => Object.assign({}, x, findVar(x.vid))).filter(x => x.v);
+  if (!lines.length) { $('#app').innerHTML = head + `<div class="wrap empty">購物車是空的<br><br><a class="btn" href="#/">去逛商品</a></div>`; return; }
+  const amount = lines.reduce((a, x) => a + x.v.price * x.qty, 0), qty = lines.reduce((a, x) => a + x.qty, 0);
+  const usable = ship.filter(x => !shipState(x, amount, qty));
+  if (!usable.find(x => x.id === shipSel)) shipSel = usable.length ? usable[0].id : '';
+  const cur = ship.find(x => x.id === shipSel);
+  const fee = cur ? shipFee(cur, amount) : 0;
+  const over = lines.some(x => x.v.stock !== null && x.qty > x.v.stock);
+  $('#app').innerHTML = head + `<div class="wrap cart">
+    <div>${lines.map(x => {
+      const ov = x.v.stock !== null && x.qty > x.v.stock;
+      return `<div class="ci">
+        <a class="ph" href="#/p/${encodeURIComponent(x.p.id)}">${x.p.photos && x.p.photos.length ? `<img src="${PHOTO(x.p.photos[0], 200)}" alt="">` : `<div class="noimg">${TIRE}</div>`}</a>
+        <div><h4>${esc(x.p.name)}</h4>${x.v.name ? `<div class="v">${esc(x.p.varName || '規格')}：${esc(x.v.name)}</div>` : ''}
+          <div class="u">${money(x.v.price)}</div>${ov ? `<div class="warn">庫存只剩 ${x.v.stock}，請改數量</div>` : ''}</div>
+        <div class="r"><b>${money(x.v.price * x.qty)}</b>
+          <span class="qty sm"><button data-vid="${esc(x.vid)}" data-d="-1">−</button><input data-vid="${esc(x.vid)}" type="number" inputmode="numeric" value="${x.qty}"><button data-vid="${esc(x.vid)}" data-d="1">＋</button></span>
+          <button class="lnk" data-del="${esc(x.vid)}">移除</button></div>
+      </div>`; }).join('')}
+      <p style="margin-top:16px"><a class="lnk o" href="#/">← 繼續選商品</a></p>
+    </div>
+    <aside class="sum dark-in">
+      <h3>訂單摘要</h3>
+      <div class="l"><span>商品 ${qty} 件</span><span>${money(amount)}</span></div>
+      <h3 style="margin-top:14px;font-size:15px">取貨方式</h3>
+      <div class="ship">${ship.length ? ship.map(x => { const why = shipState(x, amount, qty), f = shipFee(x, amount);
+        return `<label class="${why ? 'dis' : ''} ${x.id === shipSel ? 'on' : ''}"><input type="radio" name="ship" value="${esc(x.id)}" ${x.id === shipSel ? 'checked' : ''} ${why ? 'disabled' : ''}>
+          <span><b>${esc(x.name)}</b> ${x.fee ? (f ? '運費 ' + money(f) : '<span style="color:var(--ok)">免運</span>') : ''}
+          ${why ? `<small>${esc(why)}</small>` : ''}${x.desc ? `<small>${esc(x.desc)}</small>` : ''}${x.fee && x.freeOver && f ? `<small>滿 ${money(x.freeOver)} 免運</small>` : ''}</span></label>`; }).join('')
+        : '<div class="hint">旭馳還沒設定取貨方式</div>'}</div>
+      ${fee ? `<div class="l"><span>運費</span><span>${money(fee)}</span></div>` : ''}
+      <div class="l t"><span>合計</span><span>${money(amount + fee)}</span></div>
+      <div class="fld" style="margin-top:12px"><label>備註（選填）</label><textarea id="cNote" rows="2" maxlength="300" placeholder="例如：急件、下午再送">${esc(cartNote)}</textarea></div>
+      <button class="btn wide" id="cGo" ${shipSel && !over ? '' : 'disabled'}>送出叫貨</button>
+      ${!shipSel ? '<div class="hint" style="margin-top:8px;font-size:13px">目前沒有可以選的取貨方式</div>' : ''}
+      <div class="msg" id="cMsg"></div>
+    </aside>
+  </div>`;
+  const setQty = (vid, v) => { const c = cart(), it = c.find(x => x.vid === vid); if (!it) return; it.qty = Math.max(1, Math.min(500, Math.floor(Number(v) || 1))); saveCart(c); pageCart(); };
+  document.querySelectorAll('.ci .qty button').forEach(b => b.onclick = () => { const it = cart().find(x => x.vid === b.dataset.vid); setQty(b.dataset.vid, it.qty + Number(b.dataset.d)); });
+  document.querySelectorAll('.ci .qty input').forEach(i => i.onchange = () => setQty(i.dataset.vid, i.value));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { saveCart(cart().filter(x => x.vid !== b.dataset.del)); pageCart(); });
+  document.querySelectorAll('input[name=ship]').forEach(r => r.onchange = () => { shipSel = r.value; pageCart(); });
+  $('#cNote').oninput = e => { cartNote = e.target.value; };
+  $('#cGo').onclick = async () => {
+    if (!await ask('確定送出叫貨？', `共 ${qty} 件，合計 ${money(amount + fee)}\n取貨方式：${cur.name}`)) return;
+    const b = $('#cGo'); b.disabled = true; b.textContent = '送出中…'; $('#cMsg').className = 'msg';
+    nonce = nonce || Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    try {
+      const j = await call('order', { nonce, ship: shipSel, note: cartNote, items: lines.map(x => ({ vid: x.vid, qty: x.qty })) });
+      nonce = ''; cartNote = ''; saveCart([]);
+      $('#okTxt').innerHTML = `訂單編號 <b>${esc(j.no)}</b><br>共 ${j.count} 件，合計 ${money(j.total)}<br>` + (j.line ? '旭馳已經收到 LINE 通知了。' : '旭馳會在系統裡看到這張單。');
+      $('#mdOk').classList.add('on');
+      loaded = false;   // 庫存可能變了，下次重讀
+      location.hash = '#/orders';
+    } catch (e) {
+      $('#cMsg').className = 'msg err'; $('#cMsg').textContent = e.message + '（這張單還沒成立）';
+      b.disabled = false; b.textContent = '送出叫貨';
+    }
+  };
+}
+$('#okHist').onclick = $('#okBack').onclick = () => $('#mdOk').classList.remove('on');
+
+// ===== 登入／註冊 =====
+function pageAuth(mode) {
+  if (me) { location.hash = '#/'; return; }
+  const isReg = mode === 'reg', isG = isReg && !!gCred;
+  $('#app').innerHTML = `<div class="page-h"><div class="wrap"><h1>店家登入／註冊</h1></div></div>
+  <div class="wrap"><div class="auth">
+    <div class="tabs"><button class="${isReg ? '' : 'on'}" data-m="#/login">店家登入</button><button class="${isReg ? 'on' : ''}" data-m="#/register">店家註冊</button></div>
+    <div class="box">
+      <div>${isReg ? `
+        <h3>${isG ? '補填店家資料' : '註冊店家帳號'}</h3>
+        <p class="hint" style="margin:-8px 0 14px">${isG ? '這個 Google 帳號還沒註冊，填好店家資料就完成了。' : ''}旭馳確認是合作店家後會幫你開通。</p>
+        <form id="fReg">
+          ${isG ? `<div class="fld"><label>Google 帳號</label><input value="${esc(gInfo.email)}" disabled></div>`
+            : `<div class="fld"><label>Email（登入用）<i>*</i></label><input id="rEmail" type="email" autocomplete="username" required></div>`}
+          <div class="fld"><label>店名 <i>*</i></label><input id="rName" maxlength="40" required></div>
+          <div class="fld"><label>聯絡人</label><input id="rContact" maxlength="20" value="${isG ? esc(gInfo.name || '') : ''}"></div>
+          <div class="fld"><label>聯絡電話 <i>*</i></label><input id="rPhone" type="tel" maxlength="20" required></div>
+          <div class="fld"><label>店址</label><input id="rAddr" maxlength="80"></div>
+          ${isG ? '' : `<div class="fld"><label>密碼（至少 6 個字）<i>*</i></label><input id="rPass" type="password" autocomplete="new-password" required></div>
+          <div class="fld"><label>再輸入一次密碼 <i>*</i></label><input id="rPass2" type="password" autocomplete="new-password" required></div>`}
+          <button class="btn wide" type="submit">送出註冊</button>
+        </form>` : `
+        <h3>我已是合作店家！</h3>
+        <form id="fLogin">
+          <div class="fld"><input id="lEmail" type="email" placeholder="Email" autocomplete="username" required></div>
+          <div class="fld"><input id="lPass" type="password" placeholder="密碼" autocomplete="current-password" required></div>
+          <div class="row-b"><span class="hint" style="font-size:13px">忘記密碼請聯絡旭馳</span><button class="btn" type="submit">登入</button></div>
+        </form>`}
+        <div class="msg" id="aMsg"></div>
+      </div>
+      <div>
+        <h3>使用 Google 帳號快速登入或註冊</h3>
+        <div id="gbtn"></div><div class="gnote" id="gNote">Google 登入準備中…</div>
+        <p class="hint" style="margin-top:22px;font-size:13px">原本在 AppSheet 叫貨的店家：用原本的 Google 信箱登入就能直接叫貨，不用重新註冊。</p>
+      </div>
+    </div>
+  </div></div>`;
+  document.querySelectorAll('.auth .tabs button').forEach(b => b.onclick = () => { gCred = ''; location.hash = b.dataset.m; });
+  const msg = t => { $('#aMsg').className = 'msg' + (t ? ' err' : ''); $('#aMsg').textContent = t || ''; };
+  if ($('#fLogin')) $('#fLogin').onsubmit = async e => {
+    e.preventDefault(); const b = e.target.querySelector('button'); b.disabled = true; b.textContent = '登入中…'; msg('');
+    try { await enter(await call('login', { email: $('#lEmail').value, pass: $('#lPass').value })); }
+    catch (err) { msg(err.message); b.disabled = false; b.textContent = '登入'; }
+  };
+  if ($('#fReg')) $('#fReg').onsubmit = async e => {
+    e.preventDefault(); msg('');
+    const f = { name: $('#rName').value.trim(), contact: $('#rContact').value.trim(), phone: $('#rPhone').value.trim(), addr: $('#rAddr').value.trim() };
+    if (!/^[0-9+\-() #]{8,20}$/.test(f.phone)) return msg('請填正確的聯絡電話');
+    const b = e.target.querySelector('button');
+    try {
+      let j;
+      if (isG) { b.disabled = true; b.textContent = '送出中…'; j = await call('google', { credential: gCred, store: f }); }
+      else {
+        if ($('#rPass').value.length < 6) return msg('密碼至少 6 個字');
+        if ($('#rPass').value !== $('#rPass2').value) return msg('兩次輸入的密碼不一樣');
+        b.disabled = true; b.textContent = '送出中…';
+        j = await call('register', Object.assign({ email: $('#rEmail').value, pass: $('#rPass').value }, f));
+      }
+      gCred = ''; await enter(j);
+    } catch (err) { msg(/Google 登入失敗/.test(err.message) ? 'Google 登入過期了，請重新按 Google 登入' : err.message); b.disabled = false; b.textContent = '送出註冊'; }
+  };
+  initGoogle();
+}
+async function enter(j) {
+  token = j.token; ls.set(KEY, token);
+  loaded = false; await load();
+  location.hash = '#/';
+  toast(approved() ? '登入成功，歡迎 ' + me.name : '已送出，帳號審核中');
+}
+async function initGoogle() {
+  if (!$('#gbtn')) return;
+  try {
+    if (!gReady) {
+      const c = await call('config');
+      if (!c.googleClientId) { $('#gNote').textContent = 'Google 登入準備中，請先用 Email'; return; }
+      await new Promise((ok, bad) => { const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
+      google.accounts.id.initialize({ client_id: c.googleClientId, callback: onGoogle, ux_mode: 'popup' });
+      gReady = true;
+    }
+    if (!$('#gbtn')) return;
+    $('#gNote').textContent = '';
+    google.accounts.id.renderButton($('#gbtn'), { theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width: Math.min(400, $('#gbtn').clientWidth || 360), locale: 'zh-TW' });
+  } catch (e) { if ($('#gNote')) $('#gNote').textContent = 'Google 登入暫時無法使用，請用 Email 登入'; }
+}
+async function onGoogle(res) {
+  const n = $('#gNote'); if (n) n.textContent = '登入中…';
+  try {
+    const j = await call('google', { credential: res.credential });
+    if (j.need === 'register') { gCred = res.credential; gInfo = j; if (location.hash === '#/register') pageAuth('reg'); else location.hash = '#/register'; return; }
+    await enter(j);
+  } catch (e) { if ($('#aMsg')) { $('#aMsg').className = 'msg err'; $('#aMsg').textContent = e.message; } if ($('#gNote')) $('#gNote').textContent = ''; }
+}
+
+// ===== 叫貨紀錄 =====
+const ST_CLS = { '送單中': 's0', '處理中': 's1', '已出貨': 's2', '已取消': 's3' };
+async function pageOrders() {
+  $('#app').innerHTML = `<div class="page-h"><div class="wrap"><h1>我的叫貨紀錄</h1><p>「送單中」的單可以自己取消；旭馳開始處理後要取消請直接聯絡旭馳。</p></div></div><div class="wrap narrow" id="oList"><div class="spin"></div></div>`;
+  try { drawOrders((await call('history')).orders); }
+  catch (e) { if ($('#oList')) $('#oList').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+function drawOrders(list) {
+  const box = $('#oList'); if (!box) return;
+  box.innerHTML = list.length ? list.map(o => `
+    <div class="ord"><div class="hd"><span class="no">${esc(o.no)}</span><span class="tm">${esc(o.time)}</span><span class="chip ${ST_CLS[o.status] || ''}">${esc(o.status)}</span></div>
+      <ul>${o.items.map(i => `<li><span>${esc(i.pname)}${i.vname ? '｜' + esc(i.vname) : ''} × ${i.qty}</span><span>${money(i.sub)}</span></li>`).join('')}</ul>
+      <div class="hint" style="font-size:13px">取貨：${esc(o.ship || '—')}${o.fee ? '・運費 ' + money(o.fee) : ''}${o.note ? '・備註：' + esc(o.note) : ''}</div>
+      <div class="ft"><span>合計 <b>${money(o.total)}</b></span>${o.status === '送單中' ? `<button class="lnk o" data-c="${esc(o.no)}">取消這張單</button>` : ''}</div>
+    </div>`).join('') + '<div style="height:50px"></div>' : '<div class="empty">還沒有叫貨紀錄<br><br><a class="btn" href="#/">去逛商品</a></div>';
+  box.querySelectorAll('[data-c]').forEach(b => b.onclick = async () => {
+    if (!await ask('取消叫貨單 ' + b.dataset.c + '？', '取消後旭馳就不會出這張單的貨。')) return;
+    b.disabled = true; b.textContent = '取消中…';
+    try { drawOrders((await call('cancel', { no: b.dataset.c })).orders); loaded = false; }
+    catch (e) { toast(e.message); b.disabled = false; b.textContent = '取消這張單'; }
+  });
+}
+
+// ===== 店家資料 =====
+function pageProfile() {
+  $('#app').innerHTML = `<div class="page-h"><div class="wrap"><h1>店家資料</h1></div></div>
+  <div class="wrap narrow dark-in">
+    <div class="cardbox"><form id="fP">
+      <div class="fld"><label>Email</label><input value="${esc(me.email)}" disabled></div>
+      <div class="fld"><label>店名 <i>*</i></label><input id="pN" maxlength="40" value="${esc(me.name)}" required></div>
+      <div class="fld"><label>聯絡人</label><input id="pC" maxlength="20" value="${esc(me.contact)}"></div>
+      <div class="fld"><label>聯絡電話</label><input id="pPh" type="tel" maxlength="20" value="${esc(me.phone)}"></div>
+      <div class="fld"><label>店址</label><input id="pA" maxlength="80" value="${esc(me.addr)}"></div>
+      <button class="btn" type="submit">儲存</button><div class="msg" id="pM"></div></form></div>
+    <div class="cardbox"><form id="fW">
+      <h3 style="margin-bottom:12px">${me.hasPass ? '改密碼' : '設定密碼（設了也能用 Email＋密碼登入）'}</h3>
+      ${me.hasPass ? '<div class="fld"><label>目前的密碼</label><input id="wO" type="password" autocomplete="current-password"></div>' : ''}
+      <div class="fld"><label>新密碼（至少 6 個字）</label><input id="wN" type="password" autocomplete="new-password"></div>
+      <button class="btn ghost" type="submit">更新密碼</button><div class="msg" id="wM"></div></form></div>
+  </div>`;
+  const m = (el, t, ok) => { el.className = 'msg ' + (ok ? 'ok' : 'err'); el.textContent = t; };
+  $('#fP').onsubmit = async e => { e.preventDefault();
+    try { const j = await call('profile', { name: $('#pN').value, contact: $('#pC').value, phone: $('#pPh').value, addr: $('#pA').value }); setMe(j.store); m($('#pM'), '已儲存', true); }
+    catch (err) { m($('#pM'), err.message); } };
+  $('#fW').onsubmit = async e => { e.preventDefault();
+    if ($('#wN').value.length < 6) return m($('#wM'), '新密碼至少 6 個字');
+    try { const j = await call('profile', { old: $('#wO') ? $('#wO').value : '', pass: $('#wN').value }); token = j.token; ls.set(KEY, token); setMe(j.store); pageProfile(); toast('密碼已更新'); }
+    catch (err) { m($('#wM'), err.message); } };
+}
+
+// ===== 小工具 =====
+function toast(t, cartLink) {
+  const el = $('#toast');
+  el.innerHTML = '<span>' + esc(t) + '</span>' + (cartLink ? ' <a href="#/cart">去結帳</a>' : '');
+  el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2800);
+}
+function ask(t, p) {
+  return new Promise(res => {
+    $('#askT').textContent = t; $('#askP').innerText = p || '';
+    $('#mdAsk').classList.add('on');
+    const done = v => { $('#mdAsk').classList.remove('on'); res(v); };
+    $('#askYes').onclick = () => done(true); $('#askNo').onclick = () => done(false);
+  });
+}
+
+route();
+</script>
+</body>
+</html>

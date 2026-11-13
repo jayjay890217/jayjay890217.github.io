@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>店家叫貨後台｜旭馳車業</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<style>
+:root{--bg:#f4f2ef;--card:#fff;--line:#e3ded6;--txt:#1d1b18;--dim:#7a736a;--org:#f27a1a;--org-d:#b5520b;--org-l:#fff3e8;--ok:#1f9d63;--bad:#d64036;--blue:#2f6fd0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:15px/1.55 "Noto Sans TC","Microsoft JhengHei",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+header{background:#111;color:#fff;position:sticky;top:0;z-index:20}
+header .in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+header b{color:var(--org)}
+header a{color:#ccc;font-size:13px;text-decoration:none;margin-left:auto}
+header .me{font-size:13px;color:#bbb}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 16px 80px}
+.tabs{display:flex;gap:6px;margin:8px 0 16px;flex-wrap:wrap;align-items:center}
+.tabs button{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;color:var(--dim)}
+.tabs button.on{background:var(--org);border-color:var(--org);color:#111}
+.tabs .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--bad);color:#fff;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.bar select,.bar input{padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.btn{padding:9px 18px;border-radius:8px;border:0;background:var(--org);color:#111;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.g{background:#fff;border:1px solid var(--line);color:var(--txt);font-weight:500}
+.btn.r{background:#fff;border:1px solid #f0c4c0;color:var(--bad);font-weight:500}
+.btn.s{padding:5px 11px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.hidden{display:none!important}
+.mut{color:var(--dim);font-size:13px}
+.warn{color:var(--bad);font-size:13px}
+.chip{font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.c-送單中,.c-待審核{background:#fff4e0;color:#a35b00;border-color:#f5c27a}
+.c-處理中{background:#e8f0ff;color:var(--blue);border-color:#b7cdf5}
+.c-已出貨,.c-核准{background:#e6f6ee;color:var(--ok);border-color:#a8dcc1}
+.c-已取消,.c-停用{background:#f1f1f1;color:#888}
+.empty{color:var(--dim);text-align:center;padding:40px}
+
+/* 商品卡 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.pc{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.pc.off{opacity:.55}
+.pc .ph{aspect-ratio:1;background:#eee;position:relative;cursor:pointer}
+.pc .ph img{width:100%;height:100%;object-fit:cover}
+.pc .ph .ni{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:13px;text-align:center;padding:10px}
+.pc .ph .tg{position:absolute;left:8px;top:8px;background:var(--org);color:#111;font-size:11px;font-weight:900;padding:2px 7px;border-radius:4px}
+.pc .bd{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:2px}
+.pc h4{font-size:15px;line-height:1.35}
+.pc .pr{color:var(--org-d);font-weight:700;font-size:14px}
+.pc .ft{display:flex;align-items:center;gap:6px;padding:8px 12px;border-top:1px solid var(--line)}
+.sw{position:relative;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--dim)}
+.sw input{appearance:none;width:36px;height:20px;border-radius:10px;background:#ccc;position:relative;cursor:pointer;transition:.2s;flex:none}
+.sw input::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked{background:var(--ok)}
+.sw input:checked::after{left:18px}
+.addc{border:2px dashed #d6cfc4;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:260px;cursor:pointer;color:var(--dim);background:transparent;font-weight:700}
+.addc:hover{border-color:var(--org);color:var(--org-d)}
+.addc b{font-size:40px;line-height:1;font-weight:400}
+
+/* 上架編輯 */
+.ed{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;display:none}
+.ed.on{display:block}
+.ed .top{position:sticky;top:0;z-index:5;background:#111;color:#fff}
+.ed .top .in{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.ed .top h2{font-size:17px;flex:1}
+.ed .body{max-width:980px;margin:0 auto;padding:16px 16px 120px}
+.sec{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px}
+.sec h3{font-size:16px;margin-bottom:4px}
+.sec h3 small{font-weight:400;color:var(--dim);font-size:13px;margin-left:6px}
+label.f{display:block;font-size:13px;color:var(--dim);margin:12px 0 4px}
+label.f i{color:var(--bad);font-style:normal}
+.in-t,.sec input[type=text],.sec input[type=number],.sec textarea,.sec select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.sec input:focus,.sec textarea:focus{outline:2px solid var(--org-l);border-color:var(--org)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:640px){.g2{grid-template-columns:1fr}}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.quick button{padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;cursor:pointer}
+.quick button.on{background:var(--org);border-color:var(--org);color:#111;font-weight:700}
+.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px}
+.phs .t{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#eee;border:1px solid var(--line)}
+.phs .t img{width:100%;height:100%;object-fit:cover}
+.phs .t .cv{position:absolute;left:0;right:0;bottom:0;background:rgba(242,122,26,.92);color:#111;font-size:12px;font-weight:900;text-align:center;padding:2px}
+.phs .t .ops{position:absolute;top:4px;right:4px;display:flex;gap:3px}
+.phs .t .ops button{width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px;cursor:pointer;line-height:1}
+.phs .t .up{position:absolute;inset:0;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.phs .add{aspect-ratio:1;border:2px dashed #d6cfc4;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--dim);cursor:pointer;font-size:13px;background:#fafafa}
+.phs .add b{font-size:30px;font-weight:400;line-height:1}
+.phs .add.drag{border-color:var(--org);background:var(--org-l)}
+table.v{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+table.v th{font-size:12px;color:var(--dim);font-weight:500;text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.v td{padding:5px 4px;border-bottom:1px solid #f1ede7}
+table.v input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:6px}
+table.v input.n{text-align:right;max-width:96px}
+table.v tr.all td{background:var(--org-l)}
+table.v tr.all input{border-color:#f5c9a3}
+.scroll{overflow-x:auto}
+.ed .save{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:6}
+.ed .save .in{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center}
+.ed .save .msg{flex:1}
+
+/* 訂單 */
+.ord .hd{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ord .no{font-weight:900;font-size:16px}
+.ord .st{font-weight:700}
+.ord table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+.ord td{padding:4px 6px;border-bottom:1px solid #f0ece6}
+.ord td.r{text-align:right;white-space:nowrap}
+.ord .ft{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ord .ft .tot{font-weight:900;color:var(--org-d);margin-right:auto}
+.ord .log{white-space:pre-line;font-size:12px;color:var(--dim);margin-top:6px}
+
+table.t{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
+table.t th,table.t td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.t th{background:#faf8f5;font-size:13px;color:var(--dim)}
+table.t tr.click{cursor:pointer}
+table.t tr.click:hover td{background:#fff8ef}
+table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-radius:6px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.on{display:flex}
+.modal .box{background:#fff;border-radius:14px;max-width:680px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.modal h2{font-size:18px;margin-bottom:6px}
+.box .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media(max-width:560px){.box .grid{grid-template-columns:1fr}}
+.box label{display:block;font-size:12px;color:var(--dim);margin-top:8px}
+.box input,.box select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.box .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;position:sticky;bottom:-18px;background:#fff;padding:10px 0}
+.msg{font-size:14px}
+.msg.err{color:var(--bad)}.msg.ok{color:var(--ok)}
+.login{max-width:360px;margin:60px auto}
+.login input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin-top:4px}
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;display:none;z-index:60}
+</style>
+</head>
+<body>
+<header><div class="in"><span><b>旭馳</b> 店家叫貨後台</span><a href="/shop/" target="_blank">↗ 看店家頁面</a><span class="me" id="me"></span></div></header>
+<div class="wrap">
+  <div id="vLoad" class="empty">載入中…</div>
+
+  <div id="vLogin" class="hidden"><div class="card login">
+    <h2 style="font-size:18px">用工作台帳號登入</h2>
+    <p class="mut">從工作台按「店家叫貨後台」打開就不用輸入。</p>
+    <form id="fLogin">
+      <label class="mut" style="display:block;margin-top:10px">帳號</label><input id="lUser" autocomplete="username" required>
+      <label class="mut" style="display:block;margin-top:10px">密碼</label><input id="lPass" type="password" autocomplete="current-password" required>
+      <button class="btn" style="width:100%;margin-top:14px">登入</button>
+    </form>
+    <div class="msg" id="mLogin"></div>
+  </div></div>
+
+  <div id="vMain" class="hidden">
+    <div class="tabs" id="tabs">
+      <button data-t="prods" class="boss">🛞 商品上架</button>
+      <button data-t="orders">📋 訂單<span class="n hidden" id="nOrd"></span></button>
+      <button data-t="stores" class="boss">🏪 店家<span class="n hidden" id="nSt"></span></button>
+      <button data-t="set" class="boss">⚙️ 設定</button>
+      <button class="btn g s" id="reload" style="margin-left:auto">↻ 重新整理</button>
+    </div>
+
+    <section id="t-prods" class="hidden">
+      <div class="bar"><input id="pSearch" placeholder="搜尋商品名稱" style="flex:1;min-width:160px"><select id="pCat"><option value="">全部分類</option></select>
+        <select id="pOn"><option value="">上架＋下架</option><option value="1">只看上架中</option><option value="0">只看下架</option></select></div>
+      <div class="pgrid" id="prods"></div>
+    </section>
+
+    <section id="t-orders" class="hidden">
+      <div class="bar">
+        <select id="fSt"><option value="open">未完成（送單中＋處理中）</option><option value="">全部</option></select>
+        <select id="fStore"><option value="">全部店家</option></select>
+      </div>
+      <div id="orders"></div>
+    </section>
+
+    <section id="t-stores" class="hidden">
+      <div class="bar"><span class="mut">點一列可以核准、設等級、專屬價、LINE 群組。</span>
+        <button class="btn s" id="addStore" style="margin-left:auto">＋ 新增店家</button></div>
+      <div class="scroll"><table class="t" id="stores"></table></div>
+    </section>
+
+    <section id="t-set" class="hidden">
+      <div class="card">
+        <h3 style="font-size:16px">取貨方式</h3>
+        <p class="mut">店家結帳時可以選的方式。關掉的店家看不到；有填條件的，沒達到時店家選不了（會顯示還差多少）。</p>
+        <div class="scroll"><table class="t" id="shipT" style="margin-top:10px;min-width:820px"></table></div>
+        <div style="margin-top:10px;display:flex;gap:8px"><button class="btn g s" id="shipAdd">＋ 新增一種</button><button class="btn" id="shipSave" style="margin-left:auto">儲存取貨方式</button></div>
+        <div class="msg" id="mShip"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px">老闆通知群組</h3>
+        <p class="mut">「有新店家註冊」會傳到這個群組；店家還沒指定群組時，叫貨單也先傳到這裡。<br>
+          清單＝「旭馳車業 | 廠商」官方帳號綁定過的群組（把官方帳號拉進群組、在群組打「綁定」）。</p>
+        <select id="sNotify" style="margin-top:8px;padding:8px;border-radius:8px;border:1px solid var(--line);min-width:260px"></select>
+        <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="saveSet">儲存</button><button class="btn g" id="testSet">儲存並傳測試訊息</button></div>
+        <div class="msg" id="mSet"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- 上架／編輯商品 -->
+<div class="ed" id="ed">
+  <div class="top"><div class="in"><button class="btn g s" id="edClose">✕ 關閉</button><h2 id="edTitle">新增商品</h2>
+    <label class="sw" style="color:#ddd"><input type="checkbox" id="eOn" checked> 上架中</label></div></div>
+  <div class="body">
+    <div class="sec">
+      <h3>商品照片<small>第一張是封面，最多 12 張。可以一次選很多張，或直接把照片拖進來。</small></h3>
+      <div class="phs" id="ePhs"></div>
+      <input type="file" id="eFile" accept="image/*" multiple class="hidden">
+    </div>
+    <div class="sec">
+      <h3>基本資料</h3>
+      <label class="f">商品名稱 <i>*</i></label><input type="text" id="eName" maxlength="80" placeholder="例如：GP901 藍標">
+      <div class="g2">
+        <div><label class="f">副標（適用車款、品牌）</label><input type="text" id="eSub" maxlength="80" placeholder="例如：SYM 2026 JETSL"></div>
+        <div><label class="f">分類（網站上方的選單）</label><input type="text" id="eCat" maxlength="40" list="catList" placeholder="例如：輪胎"><datalist id="catList"></datalist></div>
+      </div>
+      <label class="f">標籤（顯示在照片左上角，可空白）</label>
+      <input type="text" id="eTag" maxlength="10" placeholder="例如：預購">
+      <div class="quick" id="tagQ"></div>
+      <label class="f">商品說明</label>
+      <textarea id="eDesc" rows="6" maxlength="5000" placeholder="規格、注意事項、出貨時間…（換行會照樣顯示）"></textarea>
+    </div>
+    <div class="sec">
+      <h3>規格與價格<small>每一列是一個可以選的規格。只有一種的話留一列、選項空白。</small></h3>
+      <div class="g2">
+        <div><label class="f">規格叫什麼</label><input type="text" id="eVarName" maxlength="20" placeholder="例如：尺寸、顏色、紋路">
+          <div class="quick" id="vnQ"></div></div>
+        <div><label class="f">一次新增很多規格（一行一個，按「加入」）</label>
+          <div style="display:flex;gap:6px"><textarea id="eBulk" rows="2" placeholder="110/70/12&#10;120/70/12" style="flex:1"></textarea><button class="btn g" id="eBulkGo" type="button">加入</button></div></div>
+      </div>
+      <div class="scroll" style="margin-top:12px"><table class="v" id="eVars"></table></div>
+      <div style="margin-top:8px;display:flex;gap:8px"><button class="btn g s" id="eAddVar" type="button">＋ 加一個規格</button>
+        <span class="mut" style="align-self:center">橘色那列填了按「套用」，會一次填到下面每一列。庫存空白＝不限。</span></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap">
+      <button class="btn g" id="eCopy" type="button">📄 複製成新商品</button>
+      <button class="btn r" id="eDel" type="button">刪除這個商品</button>
+    </div>
+  </div>
+  <div class="save"><div class="in"><span class="msg" id="eMsg"></span><button class="btn g" id="eCancel" type="button">取消</button><button class="btn" id="eSave" type="button">儲存並上架</button></div></div>
+</div>
+
+<!-- 店家 -->
+<div class="modal" id="mdStore"><div class="box">
+  <h2 id="sdTitle">店家</h2>
+  <div class="mut" id="sdInfo"></div>
+  <div class="grid">
+    <div><label>Email（登入用）</label><input id="sdEmail"></div>
+    <div><label>狀態</label><select id="sdStatus"><option>待審核</option><option>核准</option><option>停用</option></select></div>
+    <div><label>店名</label><input id="sdName"></div>
+    <div><label>聯絡人</label><input id="sdContact"></div>
+    <div><label>電話</label><input id="sdPhone"></div>
+    <div><label>等級（看哪一欄價格）</label><select id="sdTier"></select></div>
+    <div style="grid-column:1/-1"><label>店址</label><input id="sdAddr"></div>
+    <div style="grid-column:1/-1"><label>叫貨單傳到哪個 LINE 群組</label>
+      <div style="display:flex;gap:6px"><select id="sdGroup"></select><button class="btn g s" id="sdTest" type="button">傳測試</button></div></div>
+    <div class="hidden" id="sdPassBox" style="grid-column:1/-1"><label>密碼（選填，至少 6 個字；不填就只能用 Google 登入）</label><input id="sdPass" type="password" autocomplete="new-password"></div>
+    <div style="grid-column:1/-1"><label>備註（店家看不到）</label><input id="sdNote"></div>
+  </div>
+  <div id="sdCustomBox">
+    <label style="margin-top:14px">專屬價（只填要特別算的規格，空白＝照等級價）</label>
+    <div class="scroll"><table class="t" id="sdCustom"></table></div>
+  </div>
+  <div class="msg" id="mSd"></div>
+  <div class="acts"><button class="btn g" id="sdCancel">取消</button><button class="btn" id="sdSave">儲存</button></div>
+</div></div>
+
+<div class="modal" id="mdAsk" style="z-index:70"><div class="box" style="max-width:400px;text-align:center">
+  <h2 id="askT"></h2><p class="mut" id="askP" style="white-space:pre-line;font-size:14px"></p>
+  <div style="display:flex;gap:8px;margin-top:16px"><button class="btn g" id="askNo" style="flex:1">取消</button><button class="btn" id="askYes" style="flex:1">確定</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwpuWgRT6DTAJ6asuGvv761kvXFvGyUtwbcA34rFTBJgHpTW7kxlqyagcM-IK5y2CCk/exec';
+const DESK_AUTH = 'https://script.google.com/macros/s/AKfycbyM3jFE1rr1rUhxpvkL9hT-WzLlNIVDimjp0DtWII_Ag470GG01EVOEFIkhx-5J2ou1/exec';
+const KEY = 'xuchi_shop_admin';
+const PHOTO = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 400);
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Number(n || 0).toLocaleString();
+const ls = { get(){ try{ return localStorage.getItem(KEY) || ''; }catch(e){ return ''; } }, set(v){ try{ v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); }catch(e){} } };
+let token = ls.get(), D = null, editing = null, E = null;
+
+async function post(url, body) {
+  let r;
+  try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }); }
+  catch (e) { throw new Error('網路不穩，請再試一次'); }
+  const j = await r.json().catch(() => ({ ok: false, error: '系統忙碌中，請稍後再試' }));
+  if (!j.ok) { const e = new Error(j.error || '發生錯誤'); e.code = j.code; throw e; }
+  return j;
+}
+async function call(api, body) {
+  try { return await post(API, Object.assign({ api, token }, body || {})); }
+  catch (e) { if (e.code === 'LOGIN') { token = ''; ls.set(''); view('vLogin'); } throw e; }
+}
+function view(id) { ['vLoad', 'vLogin', 'vMain'].forEach(v => $('#' + v).classList.toggle('hidden', v !== id)); }
+function toast(t) { const el = $('#toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => el.style.display = 'none', 2400); }
+// 確認視窗（不用瀏覽器內建的 confirm，有些瀏覽器會擋掉，按了沒反應）
+function ask(t, p, yes, no) {
+  return new Promise(res => {
+    $('#askT').textContent = t; $('#askP').textContent = p || '';
+    $('#askYes').textContent = yes || '確定'; $('#askNo').textContent = no || '取消';
+    $('#mdAsk').classList.add('on');
+    const done = v => { $('#mdAsk').classList.remove('on'); res(v); };
+    $('#askYes').onclick = () => done(true); $('#askNo').onclick = () => done(false);
+  });
+}
+function msg(el, t, ok) { el.className = 'msg ' + (ok ? 'ok' : 'err'); el.textContent = t || ''; }
+
+async function start() {
+  const q = new URLSearchParams(location.search), ticket = q.get('ticket');
+  if (ticket) {
+    history.replaceState(null, '', location.pathname);
+    try { const j = await call('admin-ticket', { ticket }); token = j.token; ls.set(token); }
+    catch (e) { view('vLogin'); msg($('#mLogin'), e.message); return; }
+  }
+  if (!token) { view('vLogin'); return; }
+  await load(true);
+}
+async function load(first) {
+  try {
+    D = await call('admin-data');
+    $('#me').textContent = D.me.name + '（' + D.me.role + '）';
+    document.querySelectorAll('.boss').forEach(b => b.classList.toggle('hidden', !D.boss));
+    view('vMain'); renderAll();
+    if (first) tab(D.boss ? (D.orders.some(o => o.status === '送單中') ? 'orders' : 'prods') : 'orders');
+  } catch (e) { if (e.code !== 'LOGIN') { view('vLoad'); $('#vLoad').textContent = e.message; } }
+}
+$('#fLogin').onsubmit = async e => {
+  e.preventDefault();
+  const b = e.target.querySelector('button'); b.disabled = true;
+  try {
+    const j = await post(DESK_AUTH, { api: 'login', user: $('#lUser').value, pass: $('#lPass').value });
+    token = j.token; ls.set(token); $('#lPass').value = ''; await load(true);
+  } catch (err) { msg($('#mLogin'), err.message); }
+  b.disabled = false;
+};
+$('#reload').onclick = () => load().then(() => toast('已更新'));
+
+function tab(t) {
+  document.querySelectorAll('#tabs [data-t]').forEach(x => x.classList.toggle('on', x.dataset.t === t));
+  ['prods', 'orders', 'stores', 'set'].forEach(k => $('#t-' + k).classList.toggle('hidden', k !== t));
+}
+document.querySelectorAll('#tabs [data-t]').forEach(b => b.onclick = () => tab(b.dataset.t));
+
+function renderAll() { renderOrders(); if (D.boss) { renderProds(); renderStores(); renderSet(); } badges(); }
+function badges() {
+  const no = D.orders.filter(o => o.status === '送單中').length, ns = D.stores.filter(s => s.status === '待審核').length;
+  $('#nOrd').textContent = no; $('#nOrd').classList.toggle('hidden', !no);
+  $('#nSt').textContent = ns; $('#nSt').classList.toggle('hidden', !ns);
+}
+
+// ================= 商品列表 =================
+$('#pSearch').oninput = $('#pCat').onchange = $('#pOn').onchange = () => renderProds();
+function priceRange(vs, k) {
+  const ps = vs.map(v => v[k] || v.store || v.list).filter(Boolean);
+  if (!ps.length) return '—';
+  const lo = Math.min(...ps), hi = Math.max(...ps);
+  return money(lo) + (hi > lo ? ' - ' + money(hi) : '');
+}
+function renderProds() {
+  const cats = [...new Set(D.products.map(p => p.cat).filter(Boolean))];
+  const cur = $('#pCat').value;
+  $('#pCat').innerHTML = '<option value="">全部分類</option>' + cats.map(c => `<option ${c === cur ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  $('#catList').innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+  const kw = $('#pSearch').value.trim().toLowerCase(), on = $('#pOn').value;
+  const list = D.products.filter(p => (!kw || (p.name + p.sub).toLowerCase().includes(kw)) && (!cur || p.cat === cur) && (on === '' || String(+p.on) === on));
+  $('#prods').innerHTML = `<button class="addc" id="pNew"><b>＋</b>新增商品</button>` + list.map(p => `
+    <div class="pc ${p.on ? '' : 'off'}" data-id="${esc(p.id)}">
+      <div class="ph" data-edit="${esc(p.id)}">${p.photos.length ? `<img src="${PHOTO(p.photos[0], 400)}" alt="" loading="lazy">` : '<div class="ni">還沒有照片<br>點這裡編輯</div>'}
+        ${p.tag ? `<span class="tg">${esc(p.tag)}</span>` : ''}</div>
+      <div class="bd"><h4>${esc(p.name)}</h4><div class="mut">${esc(p.sub || p.cat || '')}</div>
+        <div class="pr">售價 ${priceRange(p.vars, 'list')}</div><div class="mut">經銷價 ${priceRange(p.vars, 'store')}</div>
+        <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}</div></div>
+      <div class="ft"><label class="sw"><input type="checkbox" data-on="${esc(p.id)}" ${p.on ? 'checked' : ''}>${p.on ? '上架中' : '已下架'}</label>
+        <button class="btn g s" data-edit="${esc(p.id)}" style="margin-left:auto">編輯</button></div>
+    </div>`).join('');
+  $('#pNew').onclick = () => openEd(null);
+  $('#prods').querySelectorAll('[data-edit]').forEach(el => el.onclick = () => openEd(D.products.find(p => p.id === el.dataset.edit)));
+  $('#prods').querySelectorAll('[data-on]').forEach(cb => cb.onchange = async () => {
+    cb.disabled = true;
+    try { D.products = (await call('admin-product-flags', { id: cb.dataset.on, on: cb.checked })).products; renderProds(); toast(cb.checked ? '已上架' : '已下架'); }
+    catch (e) { toast(e.message); cb.checked = !cb.checked; cb.disabled = false; }
+  });
+}
+
+// ================= 上架編輯 =================
+const TAGS = ['預購', '新品', '熱銷', '限量', '特價'], VNAMES = ['尺寸', '顏色', '紋路', '款式', '數量'];
+function openEd(p, copy) {
+  E = p ? JSON.parse(JSON.stringify(p)) : { name: '', sub: '', cat: '', tag: '', desc: '', photos: [], varName: '規格', on: true, vars: [{ name: '', list: '', store: '', a: '', b: '', stock: null, on: true }] };
+  if (copy) { delete E.id; E.name += '（複製）'; E.vars.forEach(v => delete v.id); }
+  $('#edTitle').textContent = E.id ? '編輯商品' : '新增商品';
+  $('#eOn').checked = E.on !== false;
+  $('#eName').value = E.name; $('#eSub').value = E.sub; $('#eCat').value = E.cat; $('#eTag').value = E.tag; $('#eDesc').value = E.desc;
+  $('#eVarName').value = E.varName || '規格';
+  $('#eDel').classList.toggle('hidden', !E.id); $('#eCopy').classList.toggle('hidden', !E.id);
+  $('#eSave').textContent = E.id ? '儲存' : '儲存並上架';
+  msg($('#eMsg'), '');
+  drawPhotos(); drawVars(); drawQuick();
+  $('#ed').classList.add('on'); $('#ed').scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function closeEd() { $('#ed').classList.remove('on'); document.body.style.overflow = ''; E = null; }
+$('#edClose').onclick = $('#eCancel').onclick = async () => { if (await ask('關閉不儲存？', '還沒儲存的修改會不見。', '關閉', '繼續編輯')) closeEd(); };
+function drawQuick() {
+  $('#tagQ').innerHTML = TAGS.map(t => `<button type="button" class="${$('#eTag').value === t ? 'on' : ''}">${t}</button>`).join('') + '<button type="button">（不要標籤）</button>';
+  $('#tagQ').querySelectorAll('button').forEach(b => b.onclick = () => { $('#eTag').value = b.textContent.startsWith('（') ? '' : b.textContent; drawQuick(); });
+  $('#vnQ').innerHTML = VNAMES.map(t => `<button type="button" class="${$('#eVarName').value === t ? 'on' : ''}">${t}</button>`).join('');
+  $('#vnQ').querySelectorAll('button').forEach(b => b.onclick = () => { $('#eVarName').value = b.textContent; drawQuick(); drawVars(); });
+}
+$('#eTag').oninput = drawQuick;
+$('#eVarName').oninput = () => { drawQuick(); };
+
+// ---- 照片 ----
+let uploading = 0;
+function drawPhotos() {
+  const box = $('#ePhs');
+  box.innerHTML = E.photos.map((id, i) => `<div class="t">${id.startsWith('blob:') ? `<img src="${id}"><div class="up">上傳中…</div>` : `<img src="${PHOTO(id, 300)}" alt="">`}
+      ${i === 0 ? '<div class="cv">封面</div>' : ''}
+      ${id.startsWith('blob:') ? '' : `<div class="ops">${i > 0 ? `<button type="button" data-l="${i}" title="往前">◀</button>` : ''}${i < E.photos.length - 1 ? `<button type="button" data-r="${i}" title="往後">▶</button>` : ''}<button type="button" data-x="${i}" title="移除">✕</button></div>`}
+    </div>`).join('') + (E.photos.length < 12 ? '<div class="add" id="eAddPh"><b>＋</b>新增照片<br><span style="font-size:11px">或拖進來</span></div>' : '');
+  box.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { const i = +b.dataset.l; [E.photos[i - 1], E.photos[i]] = [E.photos[i], E.photos[i - 1]]; drawPhotos(); });
+  box.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const i = +b.dataset.r; [E.photos[i + 1], E.photos[i]] = [E.photos[i], E.photos[i + 1]]; drawPhotos(); });
+  box.querySelectorAll('[data-x]').forEach(b => b.onclick = () => { E.photos.splice(+b.dataset.x, 1); drawPhotos(); });
+  const add = $('#eAddPh');
+  if (add) {
+    add.onclick = () => $('#eFile').click();
+    add.ondragover = e => { e.preventDefault(); add.classList.add('drag'); };
+    add.ondragleave = () => add.classList.remove('drag');
+    add.ondrop = e => { e.preventDefault(); add.classList.remove('drag'); addFiles(e.dataTransfer.files); };
+  }
+}
+$('#ePhs').ondragover = e => e.preventDefault();
+$('#ePhs').ondrop = e => { e.preventDefault(); addFiles(e.dataTransfer.files); };
+$('#eFile').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
+async function addFiles(files) {
+  const list = [...files].filter(f => f.type.startsWith('image/')).slice(0, 12 - E.photos.length);
+  for (const f of list) {
+    const tmp = URL.createObjectURL(f);
+    E.photos.push(tmp); drawPhotos(); uploading++;
+    try {
+      const data = await shrink(f);
+      const j = await call('admin-photo', { data, mime: 'image/jpeg' });
+      if (!E) return;
+      const i = E.photos.indexOf(tmp); if (i >= 0) E.photos[i] = j.id;
+    } catch (err) {
+      if (!E) return;
+      E.photos = E.photos.filter(x => x !== tmp); toast('有一張照片沒傳上去：' + err.message);
+    }
+    uploading--; URL.revokeObjectURL(tmp); if (E) drawPhotos();
+  }
+}
+// 縮到最長邊 1600、JPEG 品質 0.85，手機照片從 5MB 變 300KB 左右
+function shrink(file) {
+  return new Promise((ok, bad) => {
+    const img = new Image();
+    img.onload = () => {
+      const m = 1600, r = Math.min(1, m / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', .85)); URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => bad(new Error('這個檔案不是照片'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// ---- 規格 ----
+function readVars() {
+  return [...$('#eVars').querySelectorAll('tr[data-i]')].map(tr => {
+    const g = k => tr.querySelector(`[data-k="${k}"]`);
+    return { id: tr.dataset.id || undefined, name: g('name').value.trim(), list: g('list').value, store: g('store').value, a: g('a').value, b: g('b').value,
+      stock: g('stock').value === '' ? null : g('stock').value, on: g('on').checked };
+  });
+}
+function drawVars() {
+  const vn = $('#eVarName').value || '規格';
+  const n = v => v === null || v === undefined || v === 0 && false ? '' : v;
+  $('#eVars').innerHTML = `<tr><th style="width:26%">${esc(vn)}選項</th><th>末端售價（店家看到的大字）</th><th>經銷價（標準）</th><th>A級經銷價</th><th>B級經銷價</th><th>庫存</th><th>上架</th><th></th></tr>
+    <tr class="all"><td class="mut" style="font-size:12px">↓ 一次套用到全部</td>
+      ${['list', 'store', 'a', 'b', 'stock'].map(k => `<td><input class="n" data-all="${k}" inputmode="numeric" placeholder="—"></td>`).join('')}
+      <td colspan="2"><button class="btn s" type="button" id="eApply">套用</button></td></tr>` +
+    E.vars.map((v, i) => `<tr data-i="${i}" data-id="${esc(v.id || '')}">
+      <td><input data-k="name" value="${esc(v.name)}" placeholder="${E.vars.length === 1 ? '只有一種可空白' : '例如 110/70/12'}"></td>
+      ${['list', 'store', 'a', 'b'].map(k => `<td><input class="n" data-k="${k}" inputmode="numeric" value="${v[k] || ''}"></td>`).join('')}
+      <td><input class="n" data-k="stock" inputmode="numeric" value="${v.stock === null || v.stock === undefined ? '' : v.stock}" placeholder="不限"></td>
+      <td><input type="checkbox" data-k="on" ${v.on === false ? '' : 'checked'} style="width:auto"></td>
+      <td><button class="btn g s" type="button" data-del="${i}" title="刪除這個規格">✕</button></td></tr>`).join('');
+  $('#eVars').querySelectorAll('[data-del]').forEach(b => b.onclick = () => { E.vars = readVars(); E.vars.splice(+b.dataset.del, 1); if (!E.vars.length) E.vars.push({ name: '', on: true, stock: null }); drawVars(); });
+  $('#eApply').onclick = () => {
+    E.vars = readVars();
+    $('#eVars').querySelectorAll('[data-all]').forEach(i => { if (i.value !== '') E.vars.forEach(v => v[i.dataset.all] = i.value); });
+    drawVars(); toast('已套用到全部規格');
+  };
+}
+$('#eAddVar').onclick = () => { E.vars = readVars(); E.vars.push({ name: '', on: true, stock: null }); drawVars(); };
+$('#eBulkGo').onclick = () => {
+  const names = $('#eBulk').value.split(/\n|,|、/).map(s => s.trim()).filter(Boolean);
+  if (!names.length) return;
+  E.vars = readVars().filter(v => v.name || v.list || v.store);
+  names.forEach(n => { if (!E.vars.some(v => v.name === n)) E.vars.push({ name: n, on: true, stock: null }); });
+  $('#eBulk').value = ''; drawVars();
+};
+
+$('#eSave').onclick = async () => {
+  if (uploading) return msg($('#eMsg'), '照片還在上傳，等一下再按');
+  const f = { id: E.id, name: $('#eName').value.trim(), sub: $('#eSub').value, cat: $('#eCat').value.trim(), tag: $('#eTag').value.trim(),
+    desc: $('#eDesc').value, photos: E.photos.filter(x => !x.startsWith('blob:')), varName: $('#eVarName').value.trim() || '規格', on: $('#eOn').checked, vars: readVars() };
+  if (!f.name) { $('#eName').focus(); return msg($('#eMsg'), '請填商品名稱'); }
+  const b = $('#eSave'); b.disabled = true; msg($('#eMsg'), '儲存中…', true);
+  try {
+    const j = await call('admin-product-save', { product: f });
+    D.products = j.products; renderProds(); closeEd(); toast(f.id ? '已儲存' : '已上架，店家重新整理就看得到');
+  } catch (e) { msg($('#eMsg'), e.message); }
+  b.disabled = false;
+};
+$('#eCopy').onclick = () => { const cur = Object.assign({}, E, { name: $('#eName').value, sub: $('#eSub').value, cat: $('#eCat').value, tag: $('#eTag').value, desc: $('#eDesc').value, varName: $('#eVarName').value, vars: readVars() }); openEd(cur, true); toast('已複製，改好後按儲存就是新商品'); };
+$('#eDel').onclick = async () => {
+  if (!await ask('刪除「' + E.name + '」？', '刪了就救不回來。下過單的商品不能刪，請改成下架。', '刪除', '取消')) return;
+  try { D.products = (await call('admin-product-flags', { id: E.id, del: true })).products; renderProds(); closeEd(); toast('已刪除'); }
+  catch (e) { msg($('#eMsg'), e.message); }
+};
+
+// ================= 訂單 =================
+$('#fSt').onchange = $('#fStore').onchange = () => renderOrders();
+function renderOrders() {
+  const names = [...new Set(D.orders.map(o => o.store))], cur = $('#fStore').value;
+  $('#fStore').innerHTML = '<option value="">全部店家</option>' + names.map(n => `<option ${n === cur ? 'selected' : ''}>${esc(n)}</option>`).join('');
+  const f = $('#fSt').value, fs = $('#fStore').value;
+  const list = D.orders.filter(o => (f === 'open' ? (o.status === '送單中' || o.status === '處理中') : true) && (!fs || o.store === fs));
+  $('#orders').innerHTML = list.length ? list.map(o => `
+    <div class="card ord"><div class="hd"><span class="no">${esc(o.no)}</span><span class="st">${esc(o.store)}</span>
+      <span class="mut">${esc(o.time)}</span><span class="chip c-${esc(o.status)}" style="margin-left:auto">${esc(o.status)}</span></div>
+      <table>${o.items.map(i => `<tr><td>${esc(i.pname)}${i.vname ? '｜' + esc(i.vname) : ''}</td><td class="r">${money(i.price)} × ${i.qty}</td><td class="r">${money(i.sub)}</td></tr>`).join('')}
+        ${o.fee ? `<tr><td>運費</td><td></td><td class="r">${money(o.fee)}</td></tr>` : ''}</table>
+      <div class="mut">🚚 ${esc(o.ship || '—')}${o.note ? '　📝 ' + esc(o.note) : ''}</div>
+      ${o.line && !/^已/.test(o.line) ? `<div class="warn">LINE 通知：${esc(o.line)}</div>` : ''}
+      <div class="ft" style="margin-top:8px"><span class="tot">合計 ${money(o.total)}・${o.items.reduce((a, i) => a + i.qty, 0)} 件</span>
+        ${D.orderStatus.filter(s => s !== o.status).map(s => `<button class="btn ${s === '已出貨' ? '' : 'g'} s" data-no="${esc(o.no)}" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+      ${o.log ? `<div class="log">${esc(o.log)}</div>` : ''}
+    </div>`).join('') : '<div class="empty">沒有訂單</div>';
+  $('#orders').querySelectorAll('[data-s]').forEach(b => b.onclick = async () => {
+    const s = b.dataset.s;
+    let notify = false;
+    if (s === '已出貨' || s === '已取消') notify = await ask('改成「' + s + '」', '要順便傳 LINE 通知那家店的群組嗎？', '改並通知', '只改狀態');
+    b.disabled = true;
+    try { D.orders = (await call('admin-order', { no: b.dataset.no, status: s, notify })).orders; renderOrders(); badges(); toast('已改成 ' + s); }
+    catch (e) { toast(e.message); b.disabled = false; }
+  });
+}
+
+// ================= 店家 =================
+function renderStores() {
+  const order = { '待審核': 0, '核准': 1, '停用': 2 };
+  const list = D.stores.slice().sort((a, b) => order[a.status] - order[b.status] || Number(a.id) - Number(b.id));
+  $('#stores').innerHTML = '<tr><th>狀態</th><th>店名</th><th>聯絡人／電話</th><th>Email</th><th>等級</th><th>LINE 群組</th><th>最後登入</th></tr>' +
+    list.map(s => `<tr class="click" data-id="${esc(s.id)}"><td><span class="chip c-${esc(s.status)}">${esc(s.status)}</span></td>
+      <td><b>${esc(s.name)}</b>${Object.keys(s.custom || {}).length ? ' <span class="mut">（專屬價 ' + Object.keys(s.custom).length + '）</span>' : ''}</td>
+      <td>${esc(s.contact)}<div class="mut">${esc(s.phone)}</div></td><td>${esc(s.email)}<div class="mut">${s.google ? 'Google' : ''}${s.google && s.hasPass ? '＋' : ''}${s.hasPass ? '密碼' : ''}</div></td>
+      <td>${esc(s.tier)}</td><td>${s.group ? esc(s.groupName || '(群組)') : '<span class="warn">未設定</span>'}</td><td class="mut">${esc(s.last || '—')}</td></tr>`).join('');
+  $('#stores').querySelectorAll('tr.click').forEach(tr => tr.onclick = () => openStore(D.stores.find(s => s.id === tr.dataset.id)));
+}
+function groupOpts(sel) {
+  const has = D.groups.some(g => g.id === sel);
+  return '<option value="">（不指定，傳到老闆通知群組）</option>' +
+    (sel && !has ? `<option value="${esc(sel)}" selected>（目前的群組，已不在清單）</option>` : '') +
+    D.groups.map(g => `<option value="${esc(g.id)}" ${g.id === sel ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
+}
+function openStore(s) {
+  editing = s || null;
+  const n = !s; s = s || { status: '核准', tier: 'B級', custom: {} };
+  $('#sdTitle').textContent = n ? '新增店家' : s.name;
+  $('#sdInfo').textContent = n ? '新增的店家直接是核准；對方用這個 Email 的 Google 帳號登入，或用下面的密碼登入。' : '註冊：' + (s.created || '—') + '　最後登入：' + (s.last || '—');
+  $('#sdEmail').value = s.email || ''; $('#sdEmail').disabled = !n;
+  $('#sdPassBox').classList.toggle('hidden', !n); $('#sdPass').value = '';
+  $('#sdStatus').value = s.status; $('#sdStatus').disabled = n;
+  $('#sdName').value = s.name || ''; $('#sdContact').value = s.contact || ''; $('#sdPhone').value = s.phone || ''; $('#sdAddr').value = s.addr || '';
+  $('#sdTier').innerHTML = D.tiers.map(t => `<option ${t === s.tier ? 'selected' : ''}>${t}</option>`).join('');
+  $('#sdGroup').innerHTML = groupOpts(s.group || '');
+  $('#sdNote').value = s.note || '';
+  $('#sdCustomBox').classList.toggle('hidden', n);
+  if (!n) {
+    const rows = [];
+    D.products.forEach(p => p.vars.forEach(v => rows.push({ p, v })));
+    $('#sdCustom').innerHTML = '<tr><th>商品／規格</th><th>等級價</th><th>專屬價</th></tr>' + rows.map(({ p, v }) =>
+      `<tr><td>${esc(p.name)}${v.name ? '｜' + esc(v.name) : ''}</td><td class="mut tierp" data-id="${esc(v.id)}"></td><td style="width:120px"><input data-id="${esc(v.id)}" inputmode="numeric" value="${s.custom[v.id] || ''}" placeholder="—"></td></tr>`).join('');
+    const tierP = () => { const t = $('#sdTier').value; $('#sdCustom').querySelectorAll('.tierp').forEach(td => { let v; D.products.some(p => (v = p.vars.find(x => x.id === td.dataset.id))); td.textContent = money((t === 'A級' ? v.a : t === 'B級' ? v.b : v.store) || v.store || v.list); }); };
+    tierP(); $('#sdTier').onchange = tierP;
+  }
+  $('#mSd').textContent = ''; $('#mdStore').classList.add('on');
+}
+$('#addStore').onclick = () => openStore(null);
+$('#sdCancel').onclick = () => $('#mdStore').classList.remove('on');
+$('#sdTest').onclick = async () => {
+  const g = $('#sdGroup').value; if (!g) return msg($('#mSd'), '先選一個群組');
+  try { await call('admin-test-group', { group: g, storeName: $('#sdName').value }); msg($('#mSd'), '已傳測試訊息，去群組看看有沒有收到', true); }
+  catch (e) { msg($('#mSd'), e.message); }
+};
+$('#sdSave').onclick = async () => {
+  const b = $('#sdSave'); b.disabled = true;
+  const sel = $('#sdGroup'), gName = sel.value ? sel.options[sel.selectedIndex].text : '';
+  const body = { name: $('#sdName').value, contact: $('#sdContact').value, phone: $('#sdPhone').value, addr: $('#sdAddr').value,
+    tier: $('#sdTier').value, note: $('#sdNote').value, group: sel.value, groupName: gName };
+  try {
+    if (editing) {
+      const custom = {};
+      $('#sdCustom').querySelectorAll('input').forEach(i => { if (Number(i.value) > 0) custom[i.dataset.id] = Number(i.value); });
+      if (editing.status !== '核准' && $('#sdStatus').value === '核准' && !sel.value && !await ask('先核准？', '這家店還沒指定 LINE 群組，叫貨單會先傳到老闆通知群組。', '先核准', '回去選群組')) { b.disabled = false; return; }
+      D.stores = (await call('admin-store', Object.assign(body, { id: editing.id, status: $('#sdStatus').value, custom }))).stores;
+    } else {
+      const j = await call('admin-store-add', Object.assign(body, { email: $('#sdEmail').value, pass: $('#sdPass').value }));
+      D.stores = j.stores;
+      if (sel.value) D.stores = (await call('admin-store', Object.assign(body, { id: j.id, status: '核准', custom: {} }))).stores;
+    }
+    $('#mdStore').classList.remove('on'); renderStores(); badges(); toast('已儲存');
+  } catch (e) { msg($('#mSd'), e.message); }
+  b.disabled = false;
+};
+
+// ================= 設定 =================
+let SHIP = [];
+function renderSet() {
+  $('#sNotify').innerHTML = '<option value="">（不通知）</option>' + D.groups.map(g => `<option value="${esc(g.id)}" ${g.id === D.notifyGroup ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
+  SHIP = JSON.parse(JSON.stringify(D.ship)); drawShip();
+}
+function readShip() {
+  return [...$('#shipT').querySelectorAll('tr[data-i]')].map(tr => {
+    const g = k => tr.querySelector(`[data-k="${k}"]`);
+    return { id: tr.dataset.id, name: g('name').value, on: g('on').checked, minAmount: g('minAmount').value, minQty: g('minQty').value, fee: g('fee').value, freeOver: g('freeOver').value, desc: g('desc').value };
+  });
+}
+function drawShip() {
+  $('#shipT').innerHTML = '<tr><th>開啟</th><th>名稱</th><th>滿多少金額才能選</th><th>滿幾件才能選</th><th>運費</th><th>滿多少免運</th><th>說明（店家看得到）</th><th></th></tr>' +
+    SHIP.map((x, i) => `<tr data-i="${i}" data-id="${esc(x.id || '')}">
+      <td><label class="sw"><input type="checkbox" data-k="on" ${x.on ? 'checked' : ''}></label></td>
+      <td><input data-k="name" value="${esc(x.name)}" placeholder="例如：宅配"></td>
+      <td><input data-k="minAmount" inputmode="numeric" value="${x.minAmount || ''}" placeholder="不限"></td>
+      <td><input data-k="minQty" inputmode="numeric" value="${x.minQty || ''}" placeholder="不限"></td>
+      <td><input data-k="fee" inputmode="numeric" value="${x.fee || ''}" placeholder="免費"></td>
+      <td><input data-k="freeOver" inputmode="numeric" value="${x.freeOver || ''}" placeholder="—"></td>
+      <td><input data-k="desc" value="${esc(x.desc || '')}"></td>
+      <td><button class="btn g s" data-x="${i}">✕</button></td></tr>`).join('');
+  $('#shipT').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { SHIP = readShip(); SHIP.splice(+b.dataset.x, 1); drawShip(); });
+}
+$('#shipAdd').onclick = () => { SHIP = readShip(); SHIP.push({ name: '', on: true }); drawShip(); };
+$('#shipSave').onclick = async () => {
+  const b = $('#shipSave'); b.disabled = true;
+  try { const j = await call('admin-settings', { ship: readShip() }); D.ship = j.ship; renderSet(); msg($('#mShip'), '已儲存，店家結帳時就會看到', true); }
+  catch (e) { msg($('#mShip'), e.message); }
+  b.disabled = false;
+};
+async function saveSet(test) {
+  try { D.notifyGroup = (await call('admin-settings', { notifyGroup: $('#sNotify').value, test })).notifyGroup; msg($('#mSet'), test ? '已儲存並傳出測試訊息' : '已儲存', true); }
+  catch (e) { msg($('#mSet'), e.message); }
+}
+$('#saveSet').onclick = () => saveSet(false);
+$('#testSet').onclick = () => saveSet(true);
+
+start();
+</script>
+</body>
+</html>
