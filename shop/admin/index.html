@@ -79,6 +79,14 @@ label.f i{color:var(--bad);font-style:normal}
 .quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .quick button{padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;cursor:pointer}
 .quick button.on{background:var(--org);border-color:var(--org);color:#111;font-weight:700}
+/* 適用車型 */
+.cars .brow{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px dashed #eee}
+.cars .brow:first-of-type{border-top:0}
+.cars .bn{flex:none;width:76px;font-weight:700;font-size:14px;padding-top:4px}
+.cars .brow .quick{margin-top:0;flex:1}
+.cars .all{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fffaf2;display:flex;gap:8px;align-items:center;font-size:14px;margin:6px 0}
+.cars.dis .brow{opacity:.35;pointer-events:none}
+.crow textarea{min-height:44px}
 .phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px}
 .phs .t{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#eee;border:1px solid var(--line)}
 .phs .t img{width:100%;height:100%;object-fit:cover}
@@ -210,6 +218,15 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
         <div class="msg" id="mMenu"></div>
       </div>
       <div class="card">
+        <h3 style="font-size:16px">車種清單</h3>
+        <p class="mut">客人在「部品列表」用「車種」找商品。一個品牌一列，車型用「、」或換行分開。<br>
+          改好按「儲存車種清單」，再到商品編輯勾「適用車型」。改車型名稱的話，原本勾過的商品要重新勾。</p>
+        <div id="carL" style="margin-top:10px"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g s" id="carAdd">＋ 新增品牌</button>
+          <button class="btn" id="carSave" style="margin-left:auto">儲存車種清單</button></div>
+        <div class="msg" id="mCar"></div>
+      </div>
+      <div class="card">
         <h3 style="font-size:16px">取貨方式</h3>
         <p class="mut">店家結帳時可以選的方式。關掉的店家看不到；有填條件的，沒達到時店家選不了（會顯示還差多少）。</p>
         <div class="scroll"><table class="t" id="shipT" style="margin-top:10px;min-width:820px"></table></div>
@@ -250,6 +267,11 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
       <div class="quick" id="tagQ"></div>
       <label class="f">商品說明</label>
       <textarea id="eDesc" rows="6" maxlength="5000" placeholder="規格、注意事項、出貨時間…（換行會照樣顯示）"></textarea>
+    </div>
+    <div class="sec cars" id="eCarsBox">
+      <h3>適用車型<small>客人在「部品列表」用「車種」找商品時，會找到有勾的車型。品牌和車型在「⚙️ 設定 → 車種清單」新增。</small></h3>
+      <label class="all"><input type="checkbox" id="eCarAll"> 通用（所有車都能用，例如：安全帽、清潔用品）</label>
+      <div id="eCars"></div>
     </div>
     <div class="sec">
       <h3>規格與價格<small>每一列是一個可以選的規格。只有一種的話留一列、選項空白。</small></h3>
@@ -401,7 +423,7 @@ function renderProds() {
     <div class="pc ${p.on ? '' : 'off'}" data-id="${esc(p.id)}">
       <div class="ph" data-edit="${esc(p.id)}">${p.photos.length ? `<img src="${PHOTO(p.photos[0], 400)}" alt="" loading="lazy">` : '<div class="ni">還沒有照片<br>點這裡編輯</div>'}
         ${p.tag ? `<span class="tg">${esc(p.tag)}</span>` : ''}</div>
-      <div class="bd"><h4>${esc(p.name)}</h4><div class="mut">${esc(p.sub || p.cat || '')}</div>
+      <div class="bd"><h4>${esc(p.name)}</h4><div class="mut">${esc(p.sub || p.cat || '')}</div>${p.cars && p.cars.length ? `<div class="mut" style="font-size:12px">🏍 ${esc(carText(p.cars))}</div>` : ''}
         <div class="pr">售價 ${priceRange(p.vars, 'list')}</div><div class="mut">經銷價 ${priceRange(p.vars, 'store')}</div>
         <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}</div></div>
       <div class="ft"><label class="sw"><input type="checkbox" data-on="${esc(p.id)}" ${p.on ? 'checked' : ''}>${p.on ? '上架中' : '已下架'}</label>
@@ -419,7 +441,7 @@ function renderProds() {
 // ================= 上架編輯 =================
 const TAGS = ['預購', '新品', '熱銷', '限量', '特價'], VNAMES = ['尺寸', '顏色', '紋路', '款式', '數量'];
 function openEd(p, copy) {
-  E = p ? JSON.parse(JSON.stringify(p)) : { name: '', sub: '', cat: '', tag: '', desc: '', photos: [], varName: '規格', on: true, vars: [{ name: '', list: '', store: '', a: '', b: '', stock: null, on: true }] };
+  E = p ? JSON.parse(JSON.stringify(p)) : { name: '', sub: '', cat: '', tag: '', desc: '', photos: [], cars: [], varName: '規格', on: true, vars: [{ name: '', list: '', store: '', a: '', b: '', stock: null, on: true }] };
   if (copy) { delete E.id; E.name += '（複製）'; E.vars.forEach(v => delete v.id); }
   $('#edTitle').textContent = E.id ? '編輯商品' : '新增商品';
   $('#eOn').checked = E.on !== false;
@@ -428,7 +450,8 @@ function openEd(p, copy) {
   $('#eDel').classList.toggle('hidden', !E.id); $('#eCopy').classList.toggle('hidden', !E.id);
   $('#eSave').textContent = E.id ? '儲存' : '儲存並上架';
   msg($('#eMsg'), '');
-  drawPhotos(); drawVars(); drawQuick();
+  if (!Array.isArray(E.cars)) E.cars = [];
+  drawPhotos(); drawVars(); drawQuick(); drawCars();
   $('#ed').classList.add('on'); $('#ed').scrollTop = 0; document.body.style.overflow = 'hidden';
 }
 function closeEd() { $('#ed').classList.remove('on'); document.body.style.overflow = ''; E = null; }
@@ -440,6 +463,37 @@ function drawQuick() {
   $('#vnQ').querySelectorAll('button').forEach(b => b.onclick = () => { $('#eVarName').value = b.textContent; drawQuick(); drawVars(); });
 }
 $('#eTag').oninput = drawQuick;
+
+// ---- 適用車型 ----
+function carText(cars) {
+  if (cars.includes('通用')) return '通用';
+  const by = {};
+  cars.forEach(c => { const i = c.indexOf(' '); const b = i < 0 ? c : c.slice(0, i), m = i < 0 ? '' : c.slice(i + 1); (by[b] = by[b] || []).push(m); });
+  return Object.keys(by).map(b => b + ' ' + by[b].filter(Boolean).join('/')).join('、');
+}
+function drawCars() {
+  const all = E.cars.includes('通用');
+  $('#eCarAll').checked = all;
+  $('#eCarsBox').classList.toggle('dis', all);
+  const list = D.cars || [];
+  // 清單裡已經沒有的舊車型也顯示，避免默默不見
+  const known = new Set(); list.forEach(x => x.m.forEach(m => known.add(x.b + ' ' + m)));
+  const orphan = E.cars.filter(c => c !== '通用' && !known.has(c));
+  $('#eCars').innerHTML = list.map((x, bi) => `<div class="brow"><div class="bn">${esc(x.b)}</div><div class="quick">` +
+      (x.m.length ? x.m.map(m => { const k = x.b + ' ' + m; return `<button type="button" data-car="${esc(k)}" class="${E.cars.includes(k) ? 'on' : ''}">${esc(m)}</button>`; }).join('') +
+        `<button type="button" data-ball="${bi}" style="border-style:dashed">全選／全不選</button>` : '<span class="mut">（還沒有車型，到設定新增）</span>') +
+      `</div></div>`).join('') +
+    (orphan.length ? `<div class="brow"><div class="bn">已不在清單</div><div class="quick">${orphan.map(k => `<button type="button" data-car="${esc(k)}" class="on">${esc(k)} ✕</button>`).join('')}</div></div>` : '') +
+    (list.length ? '' : '<p class="mut">還沒有車種清單，先到「⚙️ 設定 → 車種清單」新增。</p>');
+  $('#eCars').querySelectorAll('[data-car]').forEach(b => b.onclick = () => {
+    const k = b.dataset.car; E.cars = E.cars.includes(k) ? E.cars.filter(x => x !== k) : E.cars.concat(k); drawCars();
+  });
+  $('#eCars').querySelectorAll('[data-ball]').forEach(b => b.onclick = () => {
+    const x = list[+b.dataset.ball], ks = x.m.map(m => x.b + ' ' + m), on = ks.every(k => E.cars.includes(k));
+    E.cars = on ? E.cars.filter(c => !ks.includes(c)) : [...new Set(E.cars.concat(ks))]; drawCars();
+  });
+}
+$('#eCarAll').onchange = () => { E.cars = $('#eCarAll').checked ? ['通用'] : []; drawCars(); };
 $('#eVarName').oninput = () => { drawQuick(); };
 
 // ---- 照片 ----
@@ -536,7 +590,7 @@ $('#eBulkGo').onclick = () => {
 $('#eSave').onclick = async () => {
   if (uploading) return msg($('#eMsg'), '照片還在上傳，等一下再按');
   const f = { id: E.id, name: $('#eName').value.trim(), sub: $('#eSub').value, cat: $('#eCat').value.trim(), tag: $('#eTag').value.trim(),
-    desc: $('#eDesc').value, photos: E.photos.filter(x => !x.startsWith('blob:')), varName: $('#eVarName').value.trim() || '規格', on: $('#eOn').checked, vars: readVars() };
+    desc: $('#eDesc').value, photos: E.photos.filter(x => !x.startsWith('blob:')), varName: $('#eVarName').value.trim() || '規格', on: $('#eOn').checked, vars: readVars(), cars: E.cars.slice() };
   if (!f.name) { $('#eName').focus(); return msg($('#eMsg'), '請填商品名稱'); }
   const b = $('#eSave'); b.disabled = true; msg($('#eMsg'), '儲存中…', true);
   try {
@@ -545,7 +599,7 @@ $('#eSave').onclick = async () => {
   } catch (e) { msg($('#eMsg'), e.message); }
   b.disabled = false;
 };
-$('#eCopy').onclick = () => { const cur = Object.assign({}, E, { name: $('#eName').value, sub: $('#eSub').value, cat: $('#eCat').value, tag: $('#eTag').value, desc: $('#eDesc').value, varName: $('#eVarName').value, vars: readVars() }); openEd(cur, true); toast('已複製，改好後按儲存就是新商品'); };
+$('#eCopy').onclick = () => { const cur = Object.assign({}, E, { name: $('#eName').value, sub: $('#eSub').value, cat: $('#eCat').value, tag: $('#eTag').value, desc: $('#eDesc').value, varName: $('#eVarName').value, vars: readVars(), cars: E.cars.slice() }); openEd(cur, true); toast('已複製，改好後按儲存就是新商品'); };
 $('#eDel').onclick = async () => {
   if (!await ask('刪除「' + E.name + '」？', '刪了就救不回來。下過單的商品不能刪，請改成下架。', '刪除', '取消')) return;
   try { D.products = (await call('admin-product-flags', { id: E.id, del: true })).products; renderProds(); closeEd(); toast('已刪除'); }
@@ -656,6 +710,7 @@ function renderSet() {
   const st = D.site || {};
   $('#stTitle').value = st.title || ''; $('#stSub').value = st.sub || ''; $('#stNotice').value = st.notice || '';
   MENU = JSON.parse(JSON.stringify(D.menu || [])); drawMenu();
+  CARS = JSON.parse(JSON.stringify(D.cars || [])); drawCarL();
 }
 
 // ----- 頁首選單 -----
@@ -707,6 +762,50 @@ $('#menuSave').onclick = async () => {
     const j = await call('admin-settings', { menu: list, site: { title: $('#stTitle').value, sub: $('#stSub').value, notice: $('#stNotice').value } });
     D.menu = j.menu; D.site = j.site; renderSet(); msg($('#mMenu'), '已儲存，店家重新整理頁面就會看到', true);
   } catch (e) { msg($('#mMenu'), e.message); }
+  b.disabled = false;
+};
+// ----- 車種清單 -----
+let CARS = [];
+const splitM = t => String(t || '').split(/[、,，\n]+/).map(x => x.trim()).filter(Boolean);
+function readCarL() {
+  return [...$('#carL').querySelectorAll('.mrow')].map(r => ({ b: r.querySelector('[data-k="b"]').value.trim(), m: splitM(r.querySelector('[data-k="m"]').value) }));
+}
+function drawCarL() {
+  $('#carL').innerHTML = CARS.length ? CARS.map((x, i) => `
+    <div class="mrow crow">
+      <div class="mtop">
+        <input data-k="b" value="${esc(x.b)}" placeholder="品牌（例如：SYM）" maxlength="20" style="flex:1;min-width:120px">
+        <button class="btn g s" data-cmv="${i},-1" ${i ? '' : 'disabled'} title="往上">▲</button>
+        <button class="btn g s" data-cmv="${i},1" ${i < CARS.length - 1 ? '' : 'disabled'} title="往下">▼</button>
+        <button class="btn g s" data-cdel="${i}">✕</button>
+      </div>
+      <textarea data-k="m" rows="2" placeholder="車型，用「、」分開，例如：JETSL、DRG、MMBCU">${esc(x.m.join('、'))}</textarea>
+    </div>`).join('') : '<p class="mut">還沒有品牌，按「＋ 新增品牌」。</p>';
+  const L = $('#carL');
+  L.querySelectorAll('[data-cmv]').forEach(b => b.onclick = () => {
+    const [i, d] = b.dataset.cmv.split(',').map(Number); CARS = readCarL();
+    const x = CARS.splice(i, 1)[0]; CARS.splice(i + d, 0, x); drawCarL();
+  });
+  L.querySelectorAll('[data-cdel]').forEach(b => b.onclick = async () => {
+    CARS = readCarL(); const x = CARS[+b.dataset.cdel];
+    if (x.b && !await ask('刪除品牌「' + x.b + '」？', '底下的車型也會一起拿掉；已經勾這些車型的商品，要重新勾。按「儲存車種清單」後才生效。', '刪除', '留著')) return;
+    CARS.splice(+b.dataset.cdel, 1); drawCarL();
+  });
+}
+$('#carAdd').onclick = () => {
+  CARS = readCarL(); CARS.push({ b: '', m: [] }); drawCarL();
+  const rows = $('#carL').querySelectorAll('.mrow'); rows[rows.length - 1].querySelector('[data-k="b"]').focus();
+};
+$('#carSave').onclick = async () => {
+  const b = $('#carSave'); b.disabled = true;
+  try {
+    const list = readCarL().filter(x => x.b);
+    const names = list.map(x => x.b.replace(/\s/g, ''));
+    const dup = names.find((n, i) => names.indexOf(n) !== i);
+    if (dup) throw new Error('品牌「' + dup + '」重複了');
+    const j = await call('admin-settings', { cars: list });
+    D.cars = j.cars; renderSet(); msg($('#mCar'), '已儲存，客人重新整理頁面就會看到', true);
+  } catch (e) { msg($('#mCar'), e.message); }
   b.disabled = false;
 };
 function readShip() {
