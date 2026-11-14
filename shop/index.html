@@ -146,6 +146,7 @@ main{flex:1}
 .hint{color:var(--dim);font-size:14px}
 .opt-h{display:flex;align-items:center;gap:6px;font-weight:700;margin:24px 0 10px}
 .opts{display:flex;flex-wrap:wrap;gap:10px}
+.opts .pick{color:var(--dim);font-size:14px;padding:8px 0}
 .opts button{min-width:62px;padding:9px 16px;border:1px solid #4a4c52;background:transparent;border-radius:4px;cursor:pointer;font-size:14px;color:#e8e2d8}
 .opts button:hover{border-color:#888}
 .opts button.on{border-color:var(--org);background:rgba(255,122,0,.12);color:var(--txt);box-shadow:inset 0 0 0 1px var(--org)}
@@ -521,6 +522,17 @@ function pageProduct(id) {
   if (!p) { $('#app').innerHTML = '<div class="wrap empty">找不到這個商品（可能已下架）<br><br><a class="btn" href="#/">回商品列表</a></div>'; return; }
   let sel = p.vars.length === 1 ? p.vars[0] : null, q = 1, img = 0;
   const single = p.vars.length === 1 && !p.vars[0].name;
+  // 規格名稱是「品牌 車型」（例：SYM JET-SL 125/158）而且有好幾個品牌 → 先選品牌、再顯示那個品牌的車型
+  const grp = (() => {
+    if (p.vars.length < 6 || !p.vars.every(v => /^\S+\s+\S/.test(v.name))) return null;
+    const order = carList.map(x => x.b), map = {};
+    p.vars.forEach(v => { const b = v.name.split(/\s+/)[0]; (map[b] = map[b] || []).push(v); });
+    const bs = Object.keys(map);
+    if (bs.length < 2) return null;
+    bs.sort((a, b) => (order.indexOf(a) < 0 ? 99 : order.indexOf(a)) - (order.indexOf(b) < 0 ? 99 : order.indexOf(b)));
+    return bs.map(b => ({ b, vars: map[b] }));
+  })();
+  let brand = grp ? ((F.v && grp.find(g => g.b === F.v.slice(2).split(' ')[0])) || {}).b || '' : '';
   $('#app').innerHTML = `<div class="wrap">
     <div class="crumb"><a href="#/">部品列表</a>${p.cat ? ` / <a href="#/c/${encodeURIComponent(p.cat)}">${esc(p.cat)}</a>` : ''} / ${esc(p.name)}</div>
     <div class="pd">
@@ -528,11 +540,15 @@ function pageProduct(id) {
       <div class="info">
         <h1>${esc(p.name)}${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ''}</h1>
         ${p.sub ? `<div class="sb">${esc(p.sub)}</div>` : ''}
-        ${p.cars && p.cars.length ? `<div class="fits"><b>適用車型</b>${esc(carText(p.cars))}</div>` : ''}
+        ${grp ? `<div class="fits"><b>適用車型</b>${esc(grp.map(g => g.b).join('、'))} 共 ${p.vars.length} 款（下方先選品牌再選車型）</div>`
+          : p.cars && p.cars.length ? `<div class="fits"><b>適用車型</b>${esc(carText(p.cars))}</div>` : ''}
         <div class="price-row"><span class="p" id="pP"></span>${approved() ? '<button class="toggle-p" id="pT">顯示經銷價</button>' : ''}</div>
         <div class="dealer" id="pD"></div>
         <div class="hint" id="pH"></div>
-        ${single ? '' : `<div class="opt-h">${esc(p.varName || '規格')}</div><div class="opts" id="pO">${p.vars.map(v =>
+        ${single ? '' : grp ? `<div class="opt-h">品牌</div><div class="opts" id="pB">${grp.map(g =>
+          `<button data-b="${esc(g.b)}">${esc(g.b)}</button>`).join('')}</div>
+          <div class="opt-h">${esc(p.varName || '規格')}</div><div class="opts" id="pO"></div>`
+        : `<div class="opt-h">${esc(p.varName || '規格')}</div><div class="opts" id="pO">${p.vars.map(v =>
           `<button data-v="${esc(v.id)}" ${v.stock === 0 ? 'disabled title="缺貨"' : ''}>${esc(v.name)}</button>`).join('')}</div>`}
         <div class="opt-h">購買數量</div>
         <div><span class="qty" id="pQty"><button data-d="-1" aria-label="減少">−</button><input id="pQ" type="number" inputmode="numeric" min="1" value="1" aria-label="數量"><button data-d="1" aria-label="增加">＋</button></span><span class="stock" id="pS"></span></div>
@@ -567,8 +583,19 @@ function pageProduct(id) {
     if ($('#pO')) $('#pO').querySelectorAll('button').forEach(b => b.classList.toggle('on', !!sel && b.dataset.v === sel.id));
     if ($('#pAdd')) $('#pAdd').disabled = !!sel && sel.stock === 0;
   };
+  const bindOpts = () => { if ($('#pO')) $('#pO').querySelectorAll('button[data-v]').forEach(b => b.onclick = () => { sel = p.vars.find(v => v.id === b.dataset.v); draw(); }); };
+  const drawBrand = () => {
+    $('#pB').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.b === brand));
+    const g = grp.find(x => x.b === brand);
+    $('#pO').innerHTML = g ? g.vars.map(v => `<button data-v="${esc(v.id)}" ${v.stock === 0 ? 'disabled title="缺貨"' : ''}>${esc(v.name.slice(g.b.length).trim())}</button>`).join('')
+      : '<span class="pick">↑ 請先選品牌</span>';
+    bindOpts(); draw();
+  };
   drawImg(); draw();
-  if ($('#pO')) $('#pO').querySelectorAll('button').forEach(b => b.onclick = () => { sel = p.vars.find(v => v.id === b.dataset.v); draw(); });
+  if (grp) {
+    $('#pB').querySelectorAll('button').forEach(b => b.onclick = () => { brand = b.dataset.b; if (sel && sel.name.split(/\s+/)[0] !== brand) sel = null; drawBrand(); });
+    drawBrand();
+  } else bindOpts();
   if ($('#pT')) $('#pT').onclick = () => { showDealer = !showDealer; ls.set('xuchi_shop_dealer', showDealer ? '1' : ''); draw(); };
   const qi = $('#pQ');
   const setQ = v => { q = Math.max(1, Math.min(500, Math.floor(Number(v) || 1))); qi.value = q; };
