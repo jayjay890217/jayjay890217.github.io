@@ -823,5 +823,26 @@ $('#i-line').textContent=S.line;$('#i-line').href=S.lineUrl;
 $('#gmap').src=S.mapEmbed||('https://www.google.com/maps?q='+encodeURIComponent(S.mapQuery)+'&hl=zh-TW&z=17&output=embed');
 $('#i-nav').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(S.mapQuery);
 </script>
+<!-- 店狗來財（laicai/pet.js）：改台詞改 lines；不要牠就刪掉這兩段 -->
+<script>
+window.WEB_PET = {
+  name: '來財',
+  lines: [
+    '汪！我是旭馳的店狗來財 🐶',
+    '要保養了嗎？<a href="https://line.me/R/ti/p/%40f22048272" target="_blank" rel="noopener">LINE 預約找我！</a>',
+    '機車拋錨別慌，救援電話 <a href="tel:0222048272">02-2204-8272</a>',
+    '想改車？來看看<a href="/shop/">部品列表</a>～',
+    '摸摸頭好舒服 🐾',
+    '新莊豐年街55-10號，等你來玩！'
+  ],
+  rightGap: 90,          // 右下角騎士 LOGO 的位置，來財不走過去
+  restoreSide: 'left',   // 收起後左下角出現 🐶
+  z: 45,                 // 在頁首（50）下面
+  size: 130, sizeMobile: 96,
+  startDelay: 2600,      // 等開場 LOGO 動畫結束
+  accent: '#ff7a00'
+};
+</script>
+<script src="laicai/pet.js?v=5" defer></script>
 </body>
 </html>
