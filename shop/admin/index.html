@@ -50,6 +50,12 @@ header .me{font-size:13px;color:#bbb}
 .pc .bd{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:2px}
 .pc h4{font-size:15px;line-height:1.35}
 .pc .pr{color:var(--org-d);font-weight:700;font-size:14px}
+.pc h4{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc .sb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc .cars{font-size:12px;color:var(--dim);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.pc .cars.open{display:block;-webkit-line-clamp:unset}
+.pc .more{font-size:12px;color:var(--org-d);background:none;border:0;padding:0;cursor:pointer;font-weight:700;align-self:flex-start}
+.pc .pz{margin-top:auto;padding-top:6px}
 .pc .ft{display:flex;align-items:center;gap:6px;padding:8px 12px;border-top:1px solid var(--line)}
 .sw{position:relative;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--dim)}
 .sw input{appearance:none;width:36px;height:20px;border-radius:10px;background:#ccc;position:relative;cursor:pointer;transition:.2s;flex:none}
@@ -172,7 +178,7 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
     <div class="tabs" id="tabs">
       <button data-t="prods" class="boss">🛞 商品上架</button>
       <button data-t="orders">📋 訂單<span class="n hidden" id="nOrd"></span></button>
-      <button data-t="stores" class="boss">🏪 店家<span class="n hidden" id="nSt"></span></button>
+      <button data-t="stores" class="boss">👥 會員／店家<span class="n hidden" id="nSt"></span></button>
       <button data-t="set" class="boss">⚙️ 設定</button>
       <button class="btn g s" id="reload" style="margin-left:auto">↻ 重新整理</button>
     </div>
@@ -192,8 +198,9 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
     </section>
 
     <section id="t-stores" class="hidden">
-      <div class="bar"><span class="mut">點一列可以核准、設等級、專屬價、LINE 群組。</span>
+      <div class="bar"><div class="tabs" id="kTabs" style="margin:0"></div>
         <button class="btn s" id="addStore" style="margin-left:auto">＋ 新增店家</button></div>
+      <p class="mut" id="kHint" style="margin:0 0 10px;font-size:13px"></p>
       <div class="scroll"><table class="t" id="stores"></table></div>
     </section>
 
@@ -299,9 +306,9 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
   <div class="mut" id="sdInfo"></div>
   <div class="grid">
     <div><label>Email（登入用）</label><input id="sdEmail"></div>
-    <div><label>狀態</label><select id="sdStatus"><option>待審核</option><option>核准</option><option>停用</option></select></div>
+    <div><label>身分</label><select id="sdStatus"><option value="會員">一般會員</option><option value="店家">合作店家（開通）</option><option value="停用">停用</option></select></div>
     <div><label>店名</label><input id="sdName"></div>
-    <div><label>聯絡人</label><input id="sdContact"></div>
+    <div><label>聯絡人（會員姓名）</label><input id="sdContact"></div>
     <div><label>電話</label><input id="sdPhone"></div>
     <div><label>等級（看哪一欄價格）</label><select id="sdTier"></select></div>
     <div style="grid-column:1/-1"><label>店址</label><input id="sdAddr"></div>
@@ -394,12 +401,13 @@ $('#reload').onclick = () => load().then(() => toast('已更新'));
 function tab(t) {
   document.querySelectorAll('#tabs [data-t]').forEach(x => x.classList.toggle('on', x.dataset.t === t));
   ['prods', 'orders', 'stores', 'set'].forEach(k => $('#t-' + k).classList.toggle('hidden', k !== t));
+  if (t === 'prods') fitMore();
 }
 document.querySelectorAll('#tabs [data-t]').forEach(b => b.onclick = () => tab(b.dataset.t));
 
 function renderAll() { renderOrders(); if (D.boss) { renderProds(); renderStores(); renderSet(); } badges(); }
 function badges() {
-  const no = D.orders.filter(o => o.status === '送單中').length, ns = D.stores.filter(s => s.status === '待審核').length;
+  const no = D.orders.filter(o => o.status === '送單中').length, ns = 0;
   $('#nOrd').textContent = no; $('#nOrd').classList.toggle('hidden', !no);
   $('#nSt').textContent = ns; $('#nSt').classList.toggle('hidden', !ns);
 }
@@ -412,6 +420,14 @@ function priceRange(vs, k) {
   const lo = Math.min(...ps), hi = Math.max(...ps);
   return money(lo) + (hi > lo ? ' - ' + money(hi) : '');
 }
+// 車型超過兩行才出現「…更多」（分頁看得到時才量得到高度）
+function fitMore() {
+  requestAnimationFrame(() => $('#prods').querySelectorAll('.cars').forEach(c => {
+    if (c.classList.contains('open') || !c.clientHeight) return;
+    c.nextElementSibling.classList.toggle('hidden', c.scrollHeight <= c.clientHeight + 2);
+  }));
+}
+window.addEventListener('resize', fitMore);
 function renderProds() {
   const cats = [...new Set(D.products.map(p => p.cat).filter(Boolean))];
   const cur = $('#pCat').value;
@@ -423,12 +439,17 @@ function renderProds() {
     <div class="pc ${p.on ? '' : 'off'}" data-id="${esc(p.id)}">
       <div class="ph" data-edit="${esc(p.id)}">${p.photos.length ? `<img src="${PHOTO(p.photos[0], 400)}" alt="" loading="lazy">` : '<div class="ni">還沒有照片<br>點這裡編輯</div>'}
         ${p.tag ? `<span class="tg">${esc(p.tag)}</span>` : ''}</div>
-      <div class="bd"><h4>${esc(p.name)}</h4><div class="mut">${esc(p.sub || p.cat || '')}</div>${p.cars && p.cars.length ? `<div class="mut" style="font-size:12px">🏍 ${esc(carText(p.cars))}</div>` : ''}
-        <div class="pr">售價 ${priceRange(p.vars, 'list')}</div><div class="mut">經銷價 ${priceRange(p.vars, 'store')}</div>
-        <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}</div></div>
+      <div class="bd"><h4 title="${esc(p.name)}">${esc(p.name)}</h4><div class="mut sb">${esc(p.sub || p.cat || '')}</div>${p.cars && p.cars.length ? `<div class="cars">🏍 ${esc(carText(p.cars))}</div><button class="more hidden" type="button">…更多</button>` : ''}
+        <div class="pz"><div class="pr">售價 ${priceRange(p.vars, 'list')}</div><div class="mut">經銷價 ${priceRange(p.vars, 'store')}</div>
+        <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}</div></div></div>
       <div class="ft"><label class="sw"><input type="checkbox" data-on="${esc(p.id)}" ${p.on ? 'checked' : ''}>${p.on ? '上架中' : '已下架'}</label>
         <button class="btn g s" data-edit="${esc(p.id)}" style="margin-left:auto">編輯</button></div>
     </div>`).join('');
+  $('#prods').querySelectorAll('.cars').forEach(c => {
+    const b = c.nextElementSibling;
+    b.onclick = e => { e.stopPropagation(); const o = c.classList.toggle('open'); b.textContent = o ? '收起' : '…更多'; };
+  });
+  fitMore();
   $('#pNew').onclick = () => openEd(null);
   $('#prods').querySelectorAll('[data-edit]').forEach(el => el.onclick = () => openEd(D.products.find(p => p.id === el.dataset.edit)));
   $('#prods').querySelectorAll('[data-on]').forEach(cb => cb.onchange = async () => {
@@ -634,15 +655,30 @@ function renderOrders() {
   });
 }
 
-// ================= 店家 =================
+// ================= 會員／店家 =================
+const roleOf = s => s.status === '停用' ? '停用' : (s.kind || (s.status === '待審核' ? '會員' : '店家'));
+const KT = [
+  { k: '會員', name: '一般會員', hint: '客人註冊都是會員，看得到售價、不能叫貨。確認是合作店家：點一列 → 身分改「合作店家」、店名改成店家名稱。' },
+  { k: '店家', name: '合作店家', hint: '已開通的合作店家，登入後顯示「姓名-店名」。點一列可以設等級、專屬價、LINE 群組。' },
+  { k: '停用', name: '停用', hint: '停用的帳號登入後不能叫貨。' },
+];
+let kTab = '';
 function renderStores() {
-  const order = { '待審核': 0, '核准': 1, '停用': 2 };
-  const list = D.stores.slice().sort((a, b) => order[a.status] - order[b.status] || Number(a.id) - Number(b.id));
-  $('#stores').innerHTML = '<tr><th>狀態</th><th>店名</th><th>聯絡人／電話</th><th>Email</th><th>等級</th><th>LINE 群組</th><th>最後登入</th></tr>' +
-    list.map(s => `<tr class="click" data-id="${esc(s.id)}"><td><span class="chip c-${esc(s.status)}">${esc(s.status)}</span></td>
-      <td><b>${esc(s.name)}</b>${Object.keys(s.custom || {}).length ? ' <span class="mut">（專屬價 ' + Object.keys(s.custom).length + '）</span>' : ''}</td>
-      <td>${esc(s.contact)}<div class="mut">${esc(s.phone)}</div></td><td>${esc(s.email)}<div class="mut">${s.google ? 'Google' : ''}${s.google && s.hasPass ? '＋' : ''}${s.hasPass ? '密碼' : ''}</div></td>
-      <td>${esc(s.tier)}</td><td>${s.group ? esc(s.groupName || '(群組)') : '<span class="warn">未設定</span>'}</td><td class="mut">${esc(s.last || '—')}</td></tr>`).join('');
+  const cnt = k => D.stores.filter(s => roleOf(s) === k).length;
+  if (!kTab) kTab = '店家';
+  $('#kTabs').innerHTML = KT.map(t => `<button data-k="${t.k}" class="${t.k === kTab ? 'on' : ''}">${t.name} ${cnt(t.k)}</button>`).join('');
+  $('#kTabs').querySelectorAll('button').forEach(b => b.onclick = () => { kTab = b.dataset.k; renderStores(); });
+  $('#kHint').textContent = KT.find(t => t.k === kTab).hint;
+  $('#addStore').classList.toggle('hidden', kTab !== '店家');
+  const list = D.stores.filter(s => roleOf(s) === kTab).sort((a, b) => Number(b.id) - Number(a.id));
+  const st = kTab === '店家';
+  $('#stores').innerHTML = (list.length ? `<tr><th>${st ? '店名' : '姓名'}</th><th>${st ? '聯絡人／電話' : '手機'}</th><th>Email</th>${st ? '<th>等級</th><th>LINE 群組</th>' : ''}<th>註冊</th><th>最後登入</th></tr>` : '<tr><td class="mut" style="text-align:center;padding:24px">沒有資料</td></tr>') +
+    list.map(s => `<tr class="click" data-id="${esc(s.id)}">
+      <td><b>${esc(st ? s.name : (s.contact || s.name))}</b>${!st && s.contact && s.contact !== s.name ? `<div class="mut">填的店名：${esc(s.name)}</div>` : ''}${Object.keys(s.custom || {}).length ? ' <span class="mut">（專屬價 ' + Object.keys(s.custom).length + '）</span>' : ''}</td>
+      <td>${st ? esc(s.contact) + '<div class="mut">' + esc(s.phone) + '</div>' : esc(s.phone)}</td><td>${esc(s.email)}<div class="mut">${s.google ? 'Google' : ''}${s.google && s.hasPass ? '＋' : ''}${s.hasPass ? '密碼' : ''}</div></td>
+      ${st ? `<td>${esc(s.tier)}</td><td>${s.group ? esc(s.groupName || '(群組)') : '<span class="warn">未設定</span>'}</td>` : ''}
+      <td class="mut">${esc(String(s.created || '').slice(0, 10) || '—')}</td>
+      <td class="mut">${esc(s.last || '—')}</td></tr>`).join('');
   $('#stores').querySelectorAll('tr.click').forEach(tr => tr.onclick = () => openStore(D.stores.find(s => s.id === tr.dataset.id)));
 }
 function groupOpts(sel) {
@@ -653,12 +689,13 @@ function groupOpts(sel) {
 }
 function openStore(s) {
   editing = s || null;
-  const n = !s; s = s || { status: '核准', tier: 'B級', custom: {} };
+  const n = !s; s = s || { status: '核准', kind: '店家', tier: 'B級', custom: {} };
   $('#sdTitle').textContent = n ? '新增店家' : s.name;
   $('#sdInfo').textContent = n ? '新增的店家直接是核准；對方用這個 Email 的 Google 帳號登入，或用下面的密碼登入。' : '註冊：' + (s.created || '—') + '　最後登入：' + (s.last || '—');
   $('#sdEmail').value = s.email || ''; $('#sdEmail').disabled = !n;
   $('#sdPassBox').classList.toggle('hidden', !n); $('#sdPass').value = '';
-  $('#sdStatus').value = s.status; $('#sdStatus').disabled = n;
+  $('#sdStatus').value = roleOf(s); $('#sdStatus').disabled = n;
+
   $('#sdName').value = s.name || ''; $('#sdContact').value = s.contact || ''; $('#sdPhone').value = s.phone || ''; $('#sdAddr').value = s.addr || '';
   $('#sdTier').innerHTML = D.tiers.map(t => `<option ${t === s.tier ? 'selected' : ''}>${t}</option>`).join('');
   $('#sdGroup').innerHTML = groupOpts(s.group || '');
@@ -690,12 +727,16 @@ $('#sdSave').onclick = async () => {
     if (editing) {
       const custom = {};
       $('#sdCustom').querySelectorAll('input').forEach(i => { if (Number(i.value) > 0) custom[i.dataset.id] = Number(i.value); });
-      if (editing.status !== '核准' && $('#sdStatus').value === '核准' && !sel.value && !await ask('先核准？', '這家店還沒指定 LINE 群組，叫貨單會先傳到老闆通知群組。', '先核准', '回去選群組')) { b.disabled = false; return; }
-      D.stores = (await call('admin-store', Object.assign(body, { id: editing.id, status: $('#sdStatus').value, custom }))).stores;
+      const role = $('#sdStatus').value;
+      if (roleOf(editing) !== '店家' && role === '店家' && $('#sdName').value.trim() === $('#sdContact').value.trim()) { msg($('#mSd'), '改成合作店家前，請把「店名」改成店家的名稱（登入後會顯示：姓名-店名）'); $('#sdName').focus(); b.disabled = false; return; }
+      if (roleOf(editing) !== '店家' && role === '店家' && !sel.value && !await ask('先開通？', '這家店還沒指定 LINE 群組，叫貨單會先傳到老闆通知群組。', '先開通', '回去選群組')) { b.disabled = false; return; }
+      D.stores = (await call('admin-store', Object.assign(body, { id: editing.id, role, custom }))).stores;
+      if (roleOf(editing) !== role && role !== '停用') kTab = role;
     } else {
       const j = await call('admin-store-add', Object.assign(body, { email: $('#sdEmail').value, pass: $('#sdPass').value }));
       D.stores = j.stores;
-      if (sel.value) D.stores = (await call('admin-store', Object.assign(body, { id: j.id, status: '核准', custom: {} }))).stores;
+      if (sel.value) D.stores = (await call('admin-store', Object.assign(body, { id: j.id, role: '店家', custom: {} }))).stores;
+      kTab = '店家';
     }
     $('#mdStore').classList.remove('on'); renderStores(); badges(); toast('已儲存');
   } catch (e) { msg($('#mSd'), e.message); }

@@ -55,8 +55,11 @@ nav.main a.on{color:var(--txt);border-color:#d8d2c8}
   .subnav{display:flex;gap:8px;overflow-x:auto;padding:8px 20px;border-top:1px solid var(--line);scrollbar-width:none}
   .subnav a{flex:none;padding:4px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:#ccc}
   .subnav a.on{background:var(--org);border-color:var(--org);color:#111;font-weight:700}
-  .acct .nm{max-width:110px;overflow:hidden;text-overflow:ellipsis}
+  .acct .nm{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .acct .hi{display:none}
+}
+@media(max-width:480px){
+  .acct .nm{max-width:150px}
 }
 
 main{flex:1}
@@ -266,7 +269,7 @@ footer a:hover{color:var(--org)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
         <div class="menu" id="acctMenu">
           <a href="#/orders">📋 我的叫貨紀錄</a>
-          <a href="#/profile">⚙️ 店家資料</a>
+          <a href="#/profile">⚙️ 會員資料</a>
           <a href="#" id="logoutBtn">登出</a>
         </div>
       </div>
@@ -327,7 +330,10 @@ async function call(api, body) {
   return j;
 }
 
-const approved = () => me && me.status === '核准';
+const approved = () => !!(me && me.store);
+// 還不是合作店家時要顯示的話
+const notStoreMsg = () => me.status === '停用' ? '帳號停用中，請聯絡旭馳 02-2204-8272'
+  : '合作店家請聯絡旭馳 02-2204-8272，確認後幫你開通經銷價和叫貨';
 
 // ===== 購物車（存在這台裝置，依店家分開） =====
 const cartKey = () => 'xuchi_shop_cart_' + (me ? me.id : 'guest');
@@ -337,11 +343,13 @@ function updCartN() { const n = cart().reduce((a, x) => a + x.qty, 0); $('#cartN
 function findVar(vid) { for (const p of products) { const v = p.vars.find(x => x.id === vid); if (v) return { p, v }; } return null; }
 
 // ===== 頁首 =====
+// 合作店家顯示「姓名-店名」，一般會員只顯示姓名
+function whoName(s) { return s.store && s.contact && s.contact !== s.name ? s.contact + '-' + s.name : (s.contact || s.name); }
 function setMe(s) {
   me = s;
   $('#loginLink').classList.toggle('hidden', !!s);
   $('#acctBtn').classList.toggle('hidden', !s);
-  if (s) $('#acctName').textContent = s.name;
+  if (s) $('#acctName').textContent = whoName(s);
   updCartN();
 }
 $('#acctBtn').onclick = e => { e.stopPropagation(); $('#acctMenu').classList.toggle('on'); };
@@ -458,7 +466,7 @@ function pageHome() {
   if (F.c && cs.indexOf(F.c) < 0) F.c = '';
   if (F.t && ts.indexOf(F.t) < 0) F.t = '';
   const opt = (list, cur, all) => `<option value="">${all}</option>` + list.map(x => `<option value="${esc(x)}" ${x === cur ? 'selected' : ''}>${esc(x)}</option>`).join('');
-  const cta = me ? (approved() ? '' : `<div class="cta"><span class="tag">${me.status === '停用' ? '帳號停用中，請聯絡旭馳 02-2204-8272' : '帳號審核中，旭馳開通後就能看到經銷價並下單'}</span></div>`)
+  const cta = me ? (approved() ? '' : `<div class="cta"><span class="tag">${esc(notStoreMsg())}</span></div>`)
     : '<div class="cta"><a class="btn" href="#/login">會員登入</a><a class="btn ghost" href="#/register">註冊會員</a></div>';
   $('#app').innerHTML = `
     <section class="intro"><div class="wrap"><h1>${esc(site.title || '')}</h1>${site.sub ? `<p>${esc(site.sub)}</p>` : ''}${cta}</div></section>
@@ -553,7 +561,7 @@ function pageProduct(id) {
         <div class="opt-h">購買數量</div>
         <div><span class="qty" id="pQty"><button data-d="-1" aria-label="減少">−</button><input id="pQ" type="number" inputmode="numeric" min="1" value="1" aria-label="數量"><button data-d="1" aria-label="增加">＋</button></span><span class="stock" id="pS"></span></div>
         <div class="buy">${approved() ? '<button class="btn" id="pAdd">加入購物車</button>'
-          : me ? '<button class="btn" disabled>帳號審核中，開通後才能叫貨</button>'
+          : me ? '<button class="btn" disabled>合作店家開通後才能叫貨</button>'
           : '<a class="btn" href="#/login">登入後叫貨</a>'}</div>
         ${p.desc ? `<div class="desc">${esc(p.desc)}</div>` : ''}
       </div>
@@ -622,8 +630,8 @@ const shipFee = (x, amount) => x.fee && !(x.freeOver && amount >= x.freeOver) ? 
 let shipSel = '', cartNote = '', nonce = '';
 function pageCart() {
   const head = '<div class="page-h"><div class="wrap"><h1>購物車</h1><p>確認數量和取貨方式，按「送出叫貨」旭馳就會收到。</p></div></div>';
-  if (!me) { $('#app').innerHTML = head + `<div class="wrap empty">登入店家帳號才能叫貨<br><br><a class="btn" href="#/login">會員登入</a></div>`; return; }
-  if (!approved()) { $('#app').innerHTML = head + `<div class="wrap empty">帳號還在審核中，開通後才能叫貨</div>`; return; }
+  if (!me) { $('#app').innerHTML = head + `<div class="wrap empty">合作店家登入後才能叫貨<br><br><a class="btn" href="#/login">會員登入</a></div>`; return; }
+  if (!approved()) { $('#app').innerHTML = head + `<div class="wrap empty">${esc(notStoreMsg())}</div>`; return; }
   const lines = cart().map(x => Object.assign({}, x, findVar(x.vid))).filter(x => x.v);
   if (!lines.length) { $('#app').innerHTML = head + `<div class="wrap empty">購物車是空的<br><br><a class="btn" href="#/">去逛商品</a></div>`; return; }
   const amount = lines.reduce((a, x) => a + x.v.price * x.qty, 0), qty = lines.reduce((a, x) => a + x.qty, 0);
@@ -696,20 +704,18 @@ function pageAuth(mode) {
     <div class="tabs"><button class="${isReg ? '' : 'on'}" data-m="#/login">會員登入</button><button class="${isReg ? 'on' : ''}" data-m="#/register">會員註冊</button></div>
     <div class="box">
       <div>${isReg ? `
-        <h3>${isG ? '補填店家資料' : '註冊店家帳號'}</h3>
-        <p class="hint" style="margin:-8px 0 14px">${isG ? '這個 Google 帳號還沒註冊，填好店家資料就完成了。' : ''}旭馳確認是合作店家後會幫你開通。</p>
+        <h3>${isG ? '補填會員資料' : '註冊會員'}</h3>
+        <p class="hint" style="margin:-8px 0 14px">${isG ? '這個 Google 帳號還沒註冊，填好資料就完成了。' : ''}註冊後就是旭馳會員。合作店家請聯絡旭馳，確認後幫你開通經銷價和叫貨。</p>
         <form id="fReg">
           ${isG ? `<div class="fld"><label>Google 帳號</label><input value="${esc(gInfo.email)}" disabled></div>`
             : `<div class="fld"><label>Email（登入用）<i>*</i></label><input id="rEmail" type="email" autocomplete="username" required></div>`}
-          <div class="fld"><label>店名 <i>*</i></label><input id="rName" maxlength="40" required></div>
-          <div class="fld"><label>聯絡人</label><input id="rContact" maxlength="20" value="${isG ? esc(gInfo.name || '') : ''}"></div>
-          <div class="fld"><label>聯絡電話 <i>*</i></label><input id="rPhone" type="tel" maxlength="20" required></div>
-          <div class="fld"><label>店址</label><input id="rAddr" maxlength="80"></div>
+          <div class="fld"><label>姓名 <i>*</i></label><input id="rName" maxlength="20" autocomplete="name" value="${isG ? esc(gInfo.name || '') : ''}" required></div>
+          <div class="fld"><label>手機 <i>*</i></label><input id="rPhone" type="tel" maxlength="20" autocomplete="tel" required></div>
           ${isG ? '' : `<div class="fld"><label>密碼（至少 6 個字）<i>*</i></label><input id="rPass" type="password" autocomplete="new-password" required></div>
           <div class="fld"><label>再輸入一次密碼 <i>*</i></label><input id="rPass2" type="password" autocomplete="new-password" required></div>`}
           <button class="btn wide" type="submit">送出註冊</button>
         </form>` : `
-        <h3>我已是合作店家！</h3>
+        <h3>我已經是會員！</h3>
         <form id="fLogin">
           <div class="fld"><input id="lEmail" type="email" placeholder="Email" autocomplete="username" required></div>
           <div class="fld"><input id="lPass" type="password" placeholder="密碼" autocomplete="current-password" required></div>
@@ -733,8 +739,9 @@ function pageAuth(mode) {
   };
   if ($('#fReg')) $('#fReg').onsubmit = async e => {
     e.preventDefault(); msg('');
-    const f = { name: $('#rName').value.trim(), contact: $('#rContact').value.trim(), phone: $('#rPhone').value.trim(), addr: $('#rAddr').value.trim() };
-    if (!/^[0-9+\-() #]{8,20}$/.test(f.phone)) return msg('請填正確的聯絡電話');
+    const f = { name: $('#rName').value.trim(), contact: $('#rName').value.trim(), phone: $('#rPhone').value.trim(), addr: '' };
+    if (!f.name) return msg('請填姓名');
+    if (!/^[0-9+\-() #]{8,20}$/.test(f.phone)) return msg('請填正確的手機號碼');
     const b = e.target.querySelector('button');
     try {
       let j;
@@ -754,7 +761,7 @@ async function enter(j) {
   token = j.token; ls.set(KEY, token);
   loaded = false; await load();
   location.hash = '#/';
-  toast(approved() ? '登入成功，歡迎 ' + me.name : '已送出，帳號審核中');
+  toast('登入成功，歡迎 ' + whoName(me));
 }
 async function initGoogle() {
   if (!$('#gbtn')) return;
@@ -803,16 +810,17 @@ function drawOrders(list) {
   });
 }
 
-// ===== 店家資料 =====
+// ===== 會員資料 =====
 function pageProfile() {
-  $('#app').innerHTML = `<div class="page-h"><div class="wrap"><h1>店家資料</h1></div></div>
+  const isS = approved();
+  $('#app').innerHTML = `<div class="page-h"><div class="wrap"><h1>會員資料</h1>${isS ? '<p>合作店家：可以看經銷價並叫貨</p>' : ''}</div></div>
   <div class="wrap narrow dark-in">
     <div class="cardbox"><form id="fP">
       <div class="fld"><label>Email</label><input value="${esc(me.email)}" disabled></div>
-      <div class="fld"><label>店名 <i>*</i></label><input id="pN" maxlength="40" value="${esc(me.name)}" required></div>
-      <div class="fld"><label>聯絡人</label><input id="pC" maxlength="20" value="${esc(me.contact)}"></div>
-      <div class="fld"><label>聯絡電話</label><input id="pPh" type="tel" maxlength="20" value="${esc(me.phone)}"></div>
-      <div class="fld"><label>店址</label><input id="pA" maxlength="80" value="${esc(me.addr)}"></div>
+      <div class="fld"><label>姓名 <i>*</i></label><input id="pC" maxlength="20" value="${esc(me.contact || me.name)}" required></div>
+      ${isS ? `<div class="fld"><label>店名 <i>*</i></label><input id="pN" maxlength="40" value="${esc(me.name)}" required></div>` : ''}
+      <div class="fld"><label>手機</label><input id="pPh" type="tel" maxlength="20" value="${esc(me.phone)}"></div>
+      ${isS ? `<div class="fld"><label>店址</label><input id="pA" maxlength="80" value="${esc(me.addr)}"></div>` : ''}
       <button class="btn" type="submit">儲存</button><div class="msg" id="pM"></div></form></div>
     <div class="cardbox"><form id="fW">
       <h3 style="margin-bottom:12px">${me.hasPass ? '改密碼' : '設定密碼（設了也能用 Email＋密碼登入）'}</h3>
@@ -822,7 +830,9 @@ function pageProfile() {
   </div>`;
   const m = (el, t, ok) => { el.className = 'msg ' + (ok ? 'ok' : 'err'); el.textContent = t; };
   $('#fP').onsubmit = async e => { e.preventDefault();
-    try { const j = await call('profile', { name: $('#pN').value, contact: $('#pC').value, phone: $('#pPh').value, addr: $('#pA').value }); setMe(j.store); m($('#pM'), '已儲存', true); }
+    const nm = $('#pC').value.trim();
+    if (!nm) return m($('#pM'), '請填姓名');
+    try { const j = await call('profile', { name: isS ? $('#pN').value : nm, contact: nm, phone: $('#pPh').value, addr: isS ? $('#pA').value : me.addr }); setMe(j.store); m($('#pM'), '已儲存', true); }
     catch (err) { m($('#pM'), err.message); } };
   $('#fW').onsubmit = async e => { e.preventDefault();
     if ($('#wN').value.length < 6) return m($('#wM'), '新密碼至少 6 個字');
