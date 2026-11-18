@@ -108,6 +108,11 @@ table.v th{font-size:12px;color:var(--dim);font-weight:500;text-align:left;paddi
 table.v td{padding:5px 4px;border-bottom:1px solid #f1ede7}
 table.v input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:6px}
 table.v input.n{text-align:right;max-width:96px}
+.kst{display:inline-block;min-width:44px;padding:6px 10px;border-radius:8px;background:#e6f6ee;color:var(--ok);font-weight:700;text-align:center}
+.kst.z{background:#fdecec;color:var(--bad)}
+#sdCustom tr.cg td{background:#f6f4ef;font-weight:700;cursor:pointer;user-select:none}
+#sdCustom tr.cg .ar{display:inline-block;width:1.2em;color:var(--dim)}
+#sdCustom tr.cg .cnt{font-weight:400;color:var(--dim);font-size:13px;margin-left:6px}
 table.v tr.all td{background:var(--org-l)}
 table.v tr.all input{border-color:#f5c9a3}
 .scroll{overflow-x:auto}
@@ -329,6 +334,12 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
   <h2 id="askT"></h2><p class="mut" id="askP" style="white-space:pre-line;font-size:14px"></p>
   <div style="display:flex;gap:8px;margin-top:16px"><button class="btn g" id="askNo" style="flex:1">取消</button><button class="btn" id="askYes" style="flex:1">確定</button></div>
 </div></div>
+<div class="modal" id="mdShip" style="z-index:70"><div class="box" style="max-width:420px">
+  <h2 id="shT"></h2><p class="mut" id="shP" style="white-space:pre-line;font-size:14px"></p>
+  <label style="display:flex;gap:8px;align-items:center;margin:10px 0;font-size:15px"><input type="checkbox" id="shLine" style="width:auto">傳 LINE 通知那家店的群組</label>
+  <label id="shInvW" style="display:flex;gap:8px;align-items:center;margin:10px 0;font-size:15px"><input type="checkbox" id="shInv" style="width:auto">開電子發票（KEY單 5 分鐘內自動開，有統編開統編）</label>
+  <div style="display:flex;gap:8px;margin-top:16px"><button class="btn g" id="shNo" style="flex:1">取消</button><button class="btn" id="shYes" style="flex:1">確定</button></div>
+</div></div>
 <div id="toast"></div>
 
 <script>
@@ -441,7 +452,7 @@ function renderProds() {
         ${p.tag ? `<span class="tg">${esc(p.tag)}</span>` : ''}</div>
       <div class="bd"><h4 title="${esc(p.name)}">${esc(p.name)}</h4><div class="mut sb">${esc(p.sub || p.cat || '')}</div>${p.cars && p.cars.length ? `<div class="cars">🏍 ${esc(carText(p.cars))}</div><button class="more hidden" type="button">…更多</button>` : ''}
         <div class="pz"><div class="pr">售價 ${priceRange(p.vars, 'list')}</div><div class="mut">經銷價 ${priceRange(p.vars, 'store')}</div>
-        <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}</div></div></div>
+        <div class="mut">${p.vars.length} 個${esc(p.varName || '規格')}${p.vars.some(v => !v.kid && v.stock === 0) ? '・<span class="warn">有缺貨</span>' : ''}${p.vars.some(v => v.kid) ? '・KEY單 庫存 ' + p.vars.filter(v => v.kid).reduce((a, v) => a + (Number(v.kstock) || 0), 0) + (p.vars.some(v => v.kid && !(v.kstock > 0)) ? '（<span class="warn">有 ' + p.vars.filter(v => v.kid && !(v.kstock > 0)).length + ' 個 0</span>）' : '') : ''}</div></div></div>
       <div class="ft"><label class="sw"><input type="checkbox" data-on="${esc(p.id)}" ${p.on ? 'checked' : ''}>${p.on ? '上架中' : '已下架'}</label>
         <button class="btn g s" data-edit="${esc(p.id)}" style="margin-left:auto">編輯</button></div>
     </div>`).join('');
@@ -557,6 +568,17 @@ async function addFiles(files) {
   }
 }
 // 縮到最長邊 1600、JPEG 品質 0.85，手機照片從 5MB 變 300KB 左右
+// 改狀態對話框：可勾 LINE 通知、（出貨時）開發票；取消＝不改
+function askShip(t, p, inv) {
+  return new Promise(res => {
+    $('#shT').textContent = t; $('#shP').textContent = p || '';
+    $('#shLine').checked = false; $('#shInv').checked = false; $('#shInvW').style.display = inv ? 'flex' : 'none';
+    $('#mdShip').classList.add('on');
+    const done = v => { $('#mdShip').classList.remove('on'); res(v); };
+    $('#shYes').onclick = () => done({ notify: $('#shLine').checked, invoice: inv && $('#shInv').checked });
+    $('#shNo').onclick = () => done(null);
+  });
+}
 function shrink(file) {
   return new Promise((ok, bad) => {
     const img = new Image();
@@ -575,24 +597,46 @@ function shrink(file) {
 function readVars() {
   return [...$('#eVars').querySelectorAll('tr[data-i]')].map(tr => {
     const g = k => tr.querySelector(`[data-k="${k}"]`);
-    return { id: tr.dataset.id || undefined, name: g('name').value.trim(), list: g('list').value, store: g('store').value, a: g('a').value, b: g('b').value,
-      stock: g('stock').value === '' ? null : g('stock').value, on: g('on').checked };
+    return Object.assign({}, E.vars[+tr.dataset.i] || {}, { id: tr.dataset.id || undefined, name: g('name').value.trim(), list: g('list').value, store: g('store').value, a: g('a').value, b: g('b').value,
+      stock: g('stock') ? (g('stock').value === '' ? null : g('stock').value) : (E.vars[+tr.dataset.i] || {}).stock, on: g('on').checked,
+      kid: g('kid') ? g('kid').value : (E.vars[+tr.dataset.i] || {}).kid });
   });
 }
 function drawVars() {
   const vn = $('#eVarName').value || '規格';
   const n = v => v === null || v === undefined || v === 0 && false ? '' : v;
-  $('#eVars').innerHTML = `<tr><th style="width:26%">${esc(vn)}選項</th><th>末端售價（店家看到的大字）</th><th>經銷價（標準）</th><th>A級經銷價</th><th>B級經銷價</th><th>庫存</th><th>上架</th><th></th></tr>
+  const kd = D.kd && D.kd.on, kp = (D.kd && D.kd.parts) || [];
+  const kopt = v => '<option value="">（不綁，用右邊庫存）</option>' + kp.map(x => `<option value="${esc(x[0])}" ${x[0] === v.kid ? 'selected' : ''}>${esc(x[1])}（庫存 ${x[2]}）</option>`).join('')
+    + (v.kid && !kp.some(x => x[0] === v.kid) ? `<option value="${esc(v.kid)}" selected>${esc(v.kname || v.kid)}（沒勾管庫存）</option>` : '');
+  $('#eVars').innerHTML = `<tr><th style="width:22%">${esc(vn)}選項</th><th>末端售價（店家看到的大字）</th><th>經銷價（標準）</th><th>A級經銷價</th><th>B級經銷價</th>${kd ? '<th style="width:24%">KEY單 零件（庫存看這個）<br><button class="btn g s" type="button" id="eKdAuto">自動配對</button></th>' : ''}<th style="min-width:76px;white-space:nowrap">庫存</th><th>上架</th><th></th></tr>
     <tr class="all"><td class="mut" style="font-size:12px">↓ 一次套用到全部</td>
-      ${['list', 'store', 'a', 'b', 'stock'].map(k => `<td><input class="n" data-all="${k}" inputmode="numeric" placeholder="—"></td>`).join('')}
+      ${['list', 'store', 'a', 'b'].map(k => `<td><input class="n" data-all="${k}" inputmode="numeric" placeholder="—"></td>`).join('')}${kd ? '<td></td>' : ''}<td><input class="n" data-all="stock" inputmode="numeric" placeholder="—"></td>
       <td colspan="2"><button class="btn s" type="button" id="eApply">套用</button></td></tr>` +
     E.vars.map((v, i) => `<tr data-i="${i}" data-id="${esc(v.id || '')}">
       <td><input data-k="name" value="${esc(v.name)}" placeholder="${E.vars.length === 1 ? '只有一種可空白' : '例如 110/70/12'}"></td>
       ${['list', 'store', 'a', 'b'].map(k => `<td><input class="n" data-k="${k}" inputmode="numeric" value="${v[k] || ''}"></td>`).join('')}
-      <td><input class="n" data-k="stock" inputmode="numeric" value="${v.stock === null || v.stock === undefined ? '' : v.stock}" placeholder="不限"></td>
+      ${kd ? `<td><select data-k="kid" style="font-size:12px;max-width:260px">${kopt(v)}</select></td>` : ''}
+      <td style="white-space:nowrap">${kd && v.kid ? `<span class="kst${Number(v.kstock) > 0 ? '' : ' z'}" title="KEY單 的庫存，要改請到 KEY單 進貨或盤點">${v.kstock === null || v.kstock === undefined ? '—' : v.kstock}</span>` : `<input class="n" data-k="stock" inputmode="numeric" value="${v.stock === null || v.stock === undefined ? '' : v.stock}" placeholder="不限" style="min-width:64px">`}</td>
       <td><input type="checkbox" data-k="on" ${v.on === false ? '' : 'checked'} style="width:auto"></td>
       <td><button class="btn g s" type="button" data-del="${i}" title="刪除這個規格">✕</button></td></tr>`).join('');
   $('#eVars').querySelectorAll('[data-del]').forEach(b => b.onclick = () => { E.vars = readVars(); E.vars.splice(+b.dataset.del, 1); if (!E.vars.length) E.vars.push({ name: '', on: true, stock: null }); drawVars(); });
+  if ($('#eKdAuto')) $('#eKdAuto').onclick = () => {
+    // 用「商品名稱＋規格」去比 KEY單 零件名稱：去掉空白、- _ / 後，零件名稱要包含商品名稱的每一段和規格
+    const norm = x => String(x || '').toUpperCase().replace(/[\s\-_\/()（）]/g, '');
+    const toks = norm($('#eName').value).match(/[A-Z0-9]+|[^A-Z0-9]+/g) || [];
+    E.vars = readVars(); let n = 0;
+    E.vars.forEach(v => {
+      if (v.kid || !v.name) return;
+      const want = norm($('#eName').value + v.name), ex = kp.filter(x => norm(x[1]) === want);
+      const hit = ex.length ? ex : kp.filter(x => { const k = norm(x[1]); return k.includes(norm(v.name)) && toks.every(t => k.includes(t)); });
+      if (hit.length === 1) { v.kid = hit[0][0]; v.kname = hit[0][1]; v.kstock = hit[0][2]; n++; }
+    });
+    drawVars(); toast(n ? '配對到 ' + n + ' 個，請看一下對不對' : '沒有找到能配對的（名稱要像「GP901 紅標」＋「120/70/13」）');
+  };
+  $('#eVars').querySelectorAll('select[data-k="kid"]').forEach(sel => sel.onchange = () => {
+    E.vars = readVars(); const v = E.vars[+sel.closest('tr').dataset.i], x = kp.find(y => y[0] === sel.value);
+    v.kname = x ? x[1] : ''; v.kstock = x ? x[2] : null; drawVars();
+  });
   $('#eApply').onclick = () => {
     E.vars = readVars();
     $('#eVars').querySelectorAll('[data-all]').forEach(i => { if (i.value !== '') E.vars.forEach(v => v[i.dataset.all] = i.value); });
@@ -643,14 +687,25 @@ function renderOrders() {
       ${o.line && !/^已/.test(o.line) ? `<div class="warn">LINE 通知：${esc(o.line)}</div>` : ''}
       <div class="ft" style="margin-top:8px"><span class="tot">合計 ${money(o.total)}・${o.items.reduce((a, i) => a + i.qty, 0)} 件</span>
         ${D.orderStatus.filter(s => s !== o.status).map(s => `<button class="btn ${s === '已出貨' ? '' : 'g'} s" data-no="${esc(o.no)}" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+      ${o.kd ? `<div class="mut" style="font-size:12px">✔ 已寫進 KEY單</div>` : ''}
       ${o.log ? `<div class="log">${esc(o.log)}</div>` : ''}
     </div>`).join('') : '<div class="empty">沒有訂單</div>';
   $('#orders').querySelectorAll('[data-s]').forEach(b => b.onclick = async () => {
-    const s = b.dataset.s;
-    let notify = false;
-    if (s === '已出貨' || s === '已取消') notify = await ask('改成「' + s + '」', '要順便傳 LINE 通知那家店的群組嗎？', '改並通知', '只改狀態');
+    const s = b.dataset.s, o = D.orders.find(x => x.no === b.dataset.no) || {};
+    let opt = { notify: false, invoice: false };
+    const kd = D.kd && D.kd.on, unship = kd && o.status === '已出貨' && o.kd;
+    if (s === '已出貨' || s === '已取消' || unship) {
+      const p = s === '已出貨' && kd ? '會在 KEY單 開一張出貨單（客戶＝' + o.store + '），有綁 KEY單 零件的輪胎會扣庫存。'
+        : unship ? '這張已經出貨：會刪掉 KEY單 那張出貨單，扣掉的庫存加回去。' : '';
+      opt = await askShip('改成「' + s + '」', p, s === '已出貨' && kd);
+      if (!opt) return;
+    }
     b.disabled = true;
-    try { D.orders = (await call('admin-order', { no: b.dataset.no, status: s, notify })).orders; renderOrders(); badges(); toast('已改成 ' + s); }
+    try {
+      const j = await call('admin-order', { no: b.dataset.no, status: s, notify: opt.notify, invoice: opt.invoice });
+      D.orders = j.orders; if (j.products) D.products = j.products; renderOrders(); badges();
+      toast('已改成 ' + s + (j.kdMsg ? '。' + j.kdMsg : ''));
+    }
     catch (e) { toast(e.message); b.disabled = false; }
   });
 }
@@ -702,10 +757,16 @@ function openStore(s) {
   $('#sdNote').value = s.note || '';
   $('#sdCustomBox').classList.toggle('hidden', n);
   if (!n) {
-    const rows = [];
-    D.products.forEach(p => p.vars.forEach(v => rows.push({ p, v })));
-    $('#sdCustom').innerHTML = '<tr><th>商品／規格</th><th>等級價</th><th>專屬價</th></tr>' + rows.map(({ p, v }) =>
-      `<tr><td>${esc(p.name)}${v.name ? '｜' + esc(v.name) : ''}</td><td class="mut tierp" data-id="${esc(v.id)}"></td><td style="width:120px"><input data-id="${esc(v.id)}" inputmode="numeric" value="${s.custom[v.id] || ''}" placeholder="—"></td></tr>`).join('');
+    // 依商品分組；點商品列收合／展開，有填專屬價的商品預設展開
+    $('#sdCustom').innerHTML = '<tr><th>商品／規格</th><th>等級價</th><th>專屬價</th></tr>' + D.products.filter(p => p.vars.length).map((p, gi) => {
+      const n = p.vars.filter(v => s.custom[v.id] > 0).length;
+      return `<tr class="cg" data-g="${gi}"><td colspan="3"><span class="ar">${n ? '▾' : '▸'}</span>${esc(p.name)}<span class="cnt">${p.vars.length} 個規格${n ? '・已填 ' + n + ' 個專屬價' : ''}</span></td></tr>` +
+        p.vars.map(v => `<tr data-in="${gi}"${n ? '' : ' class="hidden"'}><td style="padding-left:22px">${v.name ? esc(v.name) : esc(p.name)}</td><td class="mut tierp" data-id="${esc(v.id)}"></td><td style="width:120px"><input data-id="${esc(v.id)}" inputmode="numeric" value="${s.custom[v.id] || ''}" placeholder="—"></td></tr>`).join('');
+    }).join('');
+    $('#sdCustom').querySelectorAll('tr.cg').forEach(tr => tr.onclick = () => {
+      const rows = $('#sdCustom').querySelectorAll(`tr[data-in="${tr.dataset.g}"]`), open = rows[0] && rows[0].classList.contains('hidden');
+      rows.forEach(r => r.classList.toggle('hidden', !open)); tr.querySelector('.ar').textContent = open ? '▾' : '▸';
+    });
     const tierP = () => { const t = $('#sdTier').value; $('#sdCustom').querySelectorAll('.tierp').forEach(td => { let v; D.products.some(p => (v = p.vars.find(x => x.id === td.dataset.id))); td.textContent = money((t === 'A級' ? v.a : t === 'B級' ? v.b : v.store) || v.store || v.list); }); };
     tierP(); $('#sdTier').onchange = tierP;
   }
