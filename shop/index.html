@@ -300,7 +300,8 @@ footer a:hover{color:var(--org)}
 // ===== 設定 =====
 const API = 'https://script.google.com/macros/s/AKfycbwpuWgRT6DTAJ6asuGvv761kvXFvGyUtwbcA34rFTBJgHpTW7kxlqyagcM-IK5y2CCk/exec';
 const KEY = 'xuchi_shop_token';
-const PHOTO = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 800);
+// -rw：請 Google 直接給 WebP（比 JPG 小約 3 成），上傳照舊
+const PHOTO = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 800) + '-rw';
 const TIRE = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><circle cx="32" cy="32" r="28"/><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="4"/><path d="M32 4v10M32 50v10M4 32h10M50 32h10M12 12l7 7M45 45l7 7M12 52l7-7M45 19l7-7"/></svg>';
 
 const $ = s => document.querySelector(s);
