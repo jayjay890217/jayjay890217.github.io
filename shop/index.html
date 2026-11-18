@@ -587,7 +587,7 @@ function pageProduct(id) {
     $('#pD').textContent = retail && dealer && showDealer ? '經銷價：' + dealer : '';
     $('#pH').textContent = !ok ? (me ? '開通後就能看經銷價' : '這是末端售價，登入後可以看經銷價')
       : showDealer && !sel && p.vars.length > 1 ? '請選擇完整規格以顯示經銷價' : '';
-    $('#pS').textContent = sel && sel.avail ? (sel.avail === 'in' ? '現貨' : '需調貨') : sel && sel.stock !== null ? (sel.stock > 0 ? '庫存 ' + sel.stock : '缺貨') : '';
+    $('#pS').textContent = sel && sel.avail ? (sel.avail === 'in' ? '現貨' + (sel.kq > 0 ? '（庫存 ' + sel.kq + '）' : '') : '需調貨') : sel && sel.stock !== null ? (sel.stock > 0 ? '庫存 ' + sel.stock : '缺貨') : '';
     if ($('#pO')) $('#pO').querySelectorAll('button').forEach(b => b.classList.toggle('on', !!sel && b.dataset.v === sel.id));
     if ($('#pAdd')) $('#pAdd').disabled = !!sel && sel.stock === 0;
   };
