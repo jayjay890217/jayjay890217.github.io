@@ -637,9 +637,11 @@ function pageCart() {
   const lines = cart().map(x => Object.assign({}, x, findVar(x.vid))).filter(x => x.v);
   if (!lines.length) { $('#app').innerHTML = head + `<div class="wrap empty">購物車是空的<br><br><a class="btn" href="#/">去逛商品</a></div>`; return; }
   const amount = lines.reduce((a, x) => a + x.v.price * x.qty, 0), qty = lines.reduce((a, x) => a + x.qty, 0);
-  const usable = ship.filter(x => !shipState(x, amount, qty, lines));
+  // 有商品不能用的取貨方式直接不顯示（商品沒設定＝全部可以）
+  const shipList = ship.filter(x => !lines.some(l => l.p.ships && l.p.ships.length && !l.p.ships.includes(x.id)));
+  const usable = shipList.filter(x => !shipState(x, amount, qty, lines));
   if (!usable.find(x => x.id === shipSel)) shipSel = usable.length ? usable[0].id : '';
-  const cur = ship.find(x => x.id === shipSel);
+  const cur = shipList.find(x => x.id === shipSel);
   const fee = cur ? shipFee(cur, amount) : 0;
   const over = lines.some(x => x.v.stock !== null && x.qty > x.v.stock);
   $('#app').innerHTML = head + `<div class="wrap cart">
@@ -659,11 +661,11 @@ function pageCart() {
       <h3>訂單摘要</h3>
       <div class="l"><span>商品 ${qty} 件</span><span>${money(amount)}</span></div>
       <h3 style="margin-top:14px;font-size:15px">取貨方式</h3>
-      <div class="ship">${ship.length ? ship.map(x => { const why = shipState(x, amount, qty, lines), f = shipFee(x, amount);
+      <div class="ship">${shipList.length ? shipList.map(x => { const why = shipState(x, amount, qty, lines), f = shipFee(x, amount);
         return `<label class="${why ? 'dis' : ''} ${x.id === shipSel ? 'on' : ''}"><input type="radio" name="ship" value="${esc(x.id)}" ${x.id === shipSel ? 'checked' : ''} ${why ? 'disabled' : ''}>
           <span><b>${esc(x.name)}</b> ${x.fee ? (f ? '運費 ' + money(f) : '<span style="color:var(--ok)">免運</span>') : ''}
           ${why ? `<small>${esc(why)}</small>` : ''}${x.desc ? `<small>${esc(x.desc)}</small>` : ''}${x.fee && x.freeOver && f ? `<small>滿 ${money(x.freeOver)} 免運</small>` : ''}</span></label>`; }).join('')
-        : '<div class="hint">旭馳還沒設定取貨方式</div>'}</div>
+        : `<div class="hint">${ship.length ? '購物車裡的商品沒有共同的取貨方式，請分開叫貨' : '旭馳還沒設定取貨方式'}</div>`}</div>
       ${fee ? `<div class="l"><span>運費</span><span>${money(fee)}</span></div>` : ''}
       <div class="l t"><span>合計</span><span>${money(amount + fee)}</span></div>
       <div class="fld" style="margin-top:12px"><label>備註（選填）</label><textarea id="cNote" rows="2" maxlength="300" placeholder="例如：急件、下午再送">${esc(cartNote)}</textarea></div>
