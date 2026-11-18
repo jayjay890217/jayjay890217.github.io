@@ -740,8 +740,10 @@ const API='https://script.google.com/macros/s/AKfycbwdTz4DcFqcX9n-b8AlSZghw6jCG6
       ? '<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.name)+'</a>'
       : '<a href="/shop/#/m/'+encodeURIComponent(x.id)+'">'+esc(x.name)+'</a>').join(''); };
   try{ const c=JSON.parse(localStorage.getItem('xuchi_topnav')||'null'); if(c) draw(c); }catch(e){}
-  fetch(SHOP_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({api:'catalog'})})
-    .then(r=>r.json()).then(j=>{ if(!j||!j.ok||!Array.isArray(j.menu)) return; const m=j.menu.filter(x=>x.on!==false).map(x=>({id:x.id,name:x.name,type:x.type,url:x.url}));
+  /* 先讀 /shop/catalog.json（GitHub 上的公開商品清單，0.2 秒）；沒有才問 Apps Script（4 秒以上） */
+  fetch('/shop/catalog.json',{cache:'no-cache'}).then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(j=>Object.assign({ok:true},j))
+    .catch(()=>fetch(SHOP_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({api:'catalog'})}).then(r=>r.json()))
+    .then(j=>{ if(!j||!j.ok||!Array.isArray(j.menu)) return; const m=j.menu.filter(x=>x.on!==false).map(x=>({id:x.id,name:x.name,type:x.type,url:x.url}));
       draw(m); try{localStorage.setItem('xuchi_topnav',JSON.stringify(m));}catch(e){} }).catch(()=>{});
 })();
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

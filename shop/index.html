@@ -377,28 +377,82 @@ function renderNav() {
 }
 
 // ===== 資料 =====
-let menu = [], site = {}, carList = [];
-async function load() {
-  const j = await call('catalog');
-  products = j.products; ship = j.ship || []; loaded = true;
+// 加速（2026-11-18）：Apps Script 要 4～17 秒，所以先顯示「這台裝置上次的資料」或「公開商品清單 catalog.json」
+// （放在 GitHub，Apps Script 每 10 分鐘有變才更新），畫面馬上出來；再在背景跟 Apps Script 拿最新的，有不同就重畫
+let menu = [], site = {}, carList = [], curJson = '';
+const CAT_KEY = 'xuchi_shop_cat';
+const tokTag = () => token ? token.slice(-12) : '';   // 換帳號／登出後，上次的資料就不能用
+function apply(j) {
+  products = j.products || []; ship = j.ship || []; loaded = true;
   menu = j.menu || []; site = j.site || {}; carList = j.cars || [];
   if (site.notice) $('#noticeTxt').textContent = site.notice;
-  setMe(j.store);
-  saveCart(cart().filter(x => findVar(x.vid)));   // 已下架的從購物車拿掉
+  if ('store' in j) setMe(j.store);                  // catalog.json 沒有登入資料，不動
+  if ('store' in j) saveCart(cart().filter(x => findVar(x.vid)));   // 已下架的從購物車拿掉（只信最新資料）
+}
+async function load() {              // 一定跟 Apps Script 拿最新的（登入、下單後用）
+  const j = await call('catalog');
+  apply(j); remember(j);
+}
+function remember(j) {
+  curJson = JSON.stringify(j);
+  ls.set(CAT_KEY, JSON.stringify({ t: tokTag(), j }));
+}
+function savedCat() {
+  try { const c = JSON.parse(ls.get(CAT_KEY) || 'null'); return c && c.t === tokTag() && c.j && c.j.products ? c.j : null; } catch (e) { return null; }
+}
+async function staticCat() {
+  try {
+    const c = new AbortController(), to = setTimeout(() => c.abort(), 4000);
+    const r = await fetch('catalog.json', { cache: 'no-cache', signal: c.signal });
+    clearTimeout(to);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j && j.products ? j : null;
+  } catch (e) { return null; }
+}
+// 先用快的資料畫面，回傳 true；都沒有就回傳 false（照舊等 Apps Script）
+async function quickLoad() {
+  let j = savedCat(), from = 'saved';
+  if (!j) { j = await staticCat(); from = 'static'; }
+  if (!j) return false;
+  apply(j); curJson = from === 'saved' ? JSON.stringify(j) : '';
+  refresh();
+  return true;
+}
+let refreshing = null;
+function refresh() {
+  if (refreshing) return refreshing;
+  const hadTok = !!token;
+  return refreshing = call('catalog').then(j => {
+    const changed = JSON.stringify(j) !== curJson;
+    apply(j); remember(j);
+    if (changed) redraw();
+  }).catch(() => {
+    // 登入過期（call 已經把 token 清掉）→ 用一般訪客身分重讀
+    if (hadTok && !token) { refreshing = null; refresh(); }
+  }).finally(() => { refreshing = null; });
+}
+// 背景資料回來後重畫：只重畫商品相關頁面，填表單、購物車頁不打斷
+function redraw() {
+  const h = location.hash.replace(/^#/, '') || '/';
+  if (h === '/' || /^\/(c|m|p)\//.test(h)) { const y = window.scrollY; route(true); window.scrollTo(0, y); }
+  else renderNav();
 }
 
 // ===== 路由 =====
 window.addEventListener('hashchange', route);
-async function route() {
+async function route(keepScroll) {
   $('#acctMenu').classList.remove('on');
   const h = location.hash.replace(/^#/, '') || '/';
   const app = $('#app');
   if (!loaded) {
     app.innerHTML = '<div class="spin"></div>';
-    try { await load(); } catch (e) { app.innerHTML = `<div class="wrap empty">${esc(e.message)}<br><br><button class="btn" onclick="route()">再試一次</button></div>`; return; }
+    if (!await quickLoad()) {
+      try { await load(); } catch (e) { app.innerHTML = `<div class="wrap empty">${esc(e.message)}<br><br><button class="btn" onclick="route()">再試一次</button></div>`; return; }
+    }
   }
   renderNav();
-  window.scrollTo(0, 0);
+  if (keepScroll !== true) window.scrollTo(0, 0);
   let m;
   if (h === '/') return pageHome();
   if ((m = h.match(/^\/c\/(.+)/))) { F.c = decodeURIComponent(m[1]); return pageHome(); }
