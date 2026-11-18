@@ -286,6 +286,10 @@ table.t input{width:100%;padding:6px 7px;border:1px solid var(--line);border-rad
       <div id="eCars"></div>
     </div>
     <div class="sec">
+      <h3>取貨方式<small>這個商品可以用哪些取貨方式。都不勾＝全部都可以。購物車裡有好幾樣商品時，只會出現每一樣都能用的方式。取貨方式在「⚙️ 設定」新增。</small></h3>
+      <div class="quick" id="eShips"></div>
+    </div>
+    <div class="sec">
       <h3>規格與價格<small>每一列是一個可以選的規格。只有一種的話留一列、選項空白。</small></h3>
       <div class="g2">
         <div><label class="f">規格叫什麼</label><input type="text" id="eVarName" maxlength="20" placeholder="例如：尺寸、顏色、紋路">
@@ -483,7 +487,8 @@ function openEd(p, copy) {
   $('#eSave').textContent = E.id ? '儲存' : '儲存並上架';
   msg($('#eMsg'), '');
   if (!Array.isArray(E.cars)) E.cars = [];
-  drawPhotos(); drawVars(); drawQuick(); drawCars();
+  if (!Array.isArray(E.ships)) E.ships = [];
+  drawPhotos(); drawVars(); drawQuick(); drawCars(); drawShips();
   $('#ed').classList.add('on'); $('#ed').scrollTop = 0; document.body.style.overflow = 'hidden';
 }
 function closeEd() { $('#ed').classList.remove('on'); document.body.style.overflow = ''; E = null; }
@@ -502,6 +507,14 @@ function carText(cars) {
   const by = {};
   cars.forEach(c => { const i = c.indexOf(' '); const b = i < 0 ? c : c.slice(0, i), m = i < 0 ? '' : c.slice(i + 1); (by[b] = by[b] || []).push(m); });
   return Object.keys(by).map(b => b + ' ' + by[b].filter(Boolean).join('/')).join('、');
+}
+function drawShips() {
+  const list = D.ship || [];
+  $('#eShips').innerHTML = list.length ? list.map(x => `<button type="button" data-ship="${esc(x.id)}" class="${E.ships.includes(x.id) ? 'on' : ''}">${E.ships.includes(x.id) ? '✔ ' : ''}${esc(x.name)}${x.on === false ? '（已關閉）' : ''}</button>`).join('') +
+    `<span class="mut" style="font-size:13px;margin-left:6px">${E.ships.length ? '只限勾的方式' : '目前：全部都可以'}</span>` : '<span class="mut">還沒設定取貨方式</span>';
+  $('#eShips').querySelectorAll('[data-ship]').forEach(b => b.onclick = () => {
+    const k = b.dataset.ship; E.ships = E.ships.includes(k) ? E.ships.filter(x => x !== k) : E.ships.concat(k); drawShips();
+  });
 }
 function drawCars() {
   const all = E.cars.includes('通用');
@@ -655,7 +668,7 @@ $('#eBulkGo').onclick = () => {
 $('#eSave').onclick = async () => {
   if (uploading) return msg($('#eMsg'), '照片還在上傳，等一下再按');
   const f = { id: E.id, name: $('#eName').value.trim(), sub: $('#eSub').value, cat: $('#eCat').value.trim(), tag: $('#eTag').value.trim(),
-    desc: $('#eDesc').value, photos: E.photos.filter(x => !x.startsWith('blob:')), varName: $('#eVarName').value.trim() || '規格', on: $('#eOn').checked, vars: readVars(), cars: E.cars.slice() };
+    desc: $('#eDesc').value, photos: E.photos.filter(x => !x.startsWith('blob:')), varName: $('#eVarName').value.trim() || '規格', on: $('#eOn').checked, vars: readVars(), cars: E.cars.slice(), ships: E.ships.slice() };
   if (!f.name) { $('#eName').focus(); return msg($('#eMsg'), '請填商品名稱'); }
   const b = $('#eSave'); b.disabled = true; msg($('#eMsg'), '儲存中…', true);
   try {
@@ -664,7 +677,7 @@ $('#eSave').onclick = async () => {
   } catch (e) { msg($('#eMsg'), e.message); }
   b.disabled = false;
 };
-$('#eCopy').onclick = () => { const cur = Object.assign({}, E, { name: $('#eName').value, sub: $('#eSub').value, cat: $('#eCat').value, tag: $('#eTag').value, desc: $('#eDesc').value, varName: $('#eVarName').value, vars: readVars(), cars: E.cars.slice() }); openEd(cur, true); toast('已複製，改好後按儲存就是新商品'); };
+$('#eCopy').onclick = () => { const cur = Object.assign({}, E, { name: $('#eName').value, sub: $('#eSub').value, cat: $('#eCat').value, tag: $('#eTag').value, desc: $('#eDesc').value, varName: $('#eVarName').value, vars: readVars(), cars: E.cars.slice(), ships: E.ships.slice() }); openEd(cur, true); toast('已複製，改好後按儲存就是新商品'); };
 $('#eDel').onclick = async () => {
   if (!await ask('刪除「' + E.name + '」？', '刪了就救不回來。下過單的商品不能刪，請改成下架。', '刪除', '取消')) return;
   try { D.products = (await call('admin-product-flags', { id: E.id, del: true })).products; renderProds(); closeEd(); toast('已刪除'); }

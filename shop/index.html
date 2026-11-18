@@ -559,7 +559,7 @@ function pageProduct(id) {
         : `<div class="opt-h">${esc(p.varName || '規格')}</div><div class="opts" id="pO">${p.vars.map(v =>
           `<button data-v="${esc(v.id)}" ${v.stock === 0 ? 'disabled title="缺貨"' : ''}>${esc(v.name)}</button>`).join('')}</div>`}
         <div class="opt-h">購買數量</div>
-        <div><span class="qty" id="pQty"><button data-d="-1" aria-label="減少">−</button><input id="pQ" type="number" inputmode="numeric" min="1" value="1" aria-label="數量"><button data-d="1" aria-label="增加">＋</button></span><span class="stock" id="pS"></span></div>
+        <div><span class="qty" id="pQty"><button data-d="-1" aria-label="減少">−</button><input id="pQ" type="number" inputmode="numeric" min="1" value="1" aria-label="數量"><button data-d="1" aria-label="增加">＋</button></span><span class="stock" id="pS"></span></div>${p.ships && p.ships.length && ship.length ? `<div class="hint" style="font-size:13px;margin-top:6px">取貨方式：只限 ${esc(ship.filter(x => p.ships.includes(x.id)).map(x => x.name).join('、') || '—')}</div>` : ''}
         <div class="buy">${approved() ? '<button class="btn" id="pAdd">加入購物車</button>'
           : me ? '<button class="btn" disabled>合作店家開通後才能叫貨</button>'
           : '<a class="btn" href="#/login">登入後叫貨</a>'}</div>
@@ -621,7 +621,9 @@ function pageProduct(id) {
 }
 
 // ===== 購物車 =====
-function shipState(x, amount, qty) {
+function shipState(x, amount, qty, lines) {
+  const no = (lines || []).find(l => l.p.ships && l.p.ships.length && !l.p.ships.includes(x.id));
+  if (no) return '「' + no.p.name + '」不能用這個方式';
   if (x.minAmount && amount < x.minAmount) return '滿 ' + money(x.minAmount) + ' 才能選（還差 ' + money(x.minAmount - amount) + '）';
   if (x.minQty && qty < x.minQty) return '滿 ' + x.minQty + ' 件才能選（還差 ' + (x.minQty - qty) + ' 件）';
   return '';
@@ -635,7 +637,7 @@ function pageCart() {
   const lines = cart().map(x => Object.assign({}, x, findVar(x.vid))).filter(x => x.v);
   if (!lines.length) { $('#app').innerHTML = head + `<div class="wrap empty">購物車是空的<br><br><a class="btn" href="#/">去逛商品</a></div>`; return; }
   const amount = lines.reduce((a, x) => a + x.v.price * x.qty, 0), qty = lines.reduce((a, x) => a + x.qty, 0);
-  const usable = ship.filter(x => !shipState(x, amount, qty));
+  const usable = ship.filter(x => !shipState(x, amount, qty, lines));
   if (!usable.find(x => x.id === shipSel)) shipSel = usable.length ? usable[0].id : '';
   const cur = ship.find(x => x.id === shipSel);
   const fee = cur ? shipFee(cur, amount) : 0;
@@ -657,7 +659,7 @@ function pageCart() {
       <h3>訂單摘要</h3>
       <div class="l"><span>商品 ${qty} 件</span><span>${money(amount)}</span></div>
       <h3 style="margin-top:14px;font-size:15px">取貨方式</h3>
-      <div class="ship">${ship.length ? ship.map(x => { const why = shipState(x, amount, qty), f = shipFee(x, amount);
+      <div class="ship">${ship.length ? ship.map(x => { const why = shipState(x, amount, qty, lines), f = shipFee(x, amount);
         return `<label class="${why ? 'dis' : ''} ${x.id === shipSel ? 'on' : ''}"><input type="radio" name="ship" value="${esc(x.id)}" ${x.id === shipSel ? 'checked' : ''} ${why ? 'disabled' : ''}>
           <span><b>${esc(x.name)}</b> ${x.fee ? (f ? '運費 ' + money(f) : '<span style="color:var(--ok)">免運</span>') : ''}
           ${why ? `<small>${esc(why)}</small>` : ''}${x.desc ? `<small>${esc(x.desc)}</small>` : ''}${x.fee && x.freeOver && f ? `<small>滿 ${money(x.freeOver)} 免運</small>` : ''}</span></label>`; }).join('')
